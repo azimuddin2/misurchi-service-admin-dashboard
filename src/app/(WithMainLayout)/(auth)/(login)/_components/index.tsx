@@ -65,7 +65,7 @@ const LoginForm = () => {
       toast.success(response.message || 'Login successful');
       form.reset();
 
-      router.push(redirect || '/');
+      router.push(redirect || '/admin/dashboard');
     } catch (error: any) {
       const message =
         error?.data?.message ||
