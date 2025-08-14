@@ -6,6 +6,15 @@ import {
   LayoutDashboard,
   UserRound,
   SquareLibrary,
+  FileText,
+  FileCheck,
+  Shield,
+  Info,
+  Receipt,
+  Crown,
+  DollarSign,
+  Star,
+  Mail,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -49,17 +58,49 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         icon: SquareLibrary,
       },
       {
+        title: 'Manage Subscription',
+        url: `/admin/manage-subscription`,
+        icon: Crown,
+      },
+      {
+        title: 'Payout Manage',
+        url: `/admin/payout-manage`,
+        icon: DollarSign,
+      },
+      {
+        title: 'Refer and Earn',
+        url: `/admin/refer-earn`,
+        icon: Star,
+      },
+      {
+        title: 'Contact List',
+        url: `/admin/contact-list`,
+        icon: Mail,
+      },
+      {
         title: 'Settings',
-        url: '/vendor/edit-profile',
+        url: '/admin/privacy-policy',
         icon: Settings,
         items: [
           {
-            title: 'Edit Profile',
-            url: '/vendor/edit-profile',
+            title: 'Privacy Policy',
+            url: '/admin/privacy-policy',
+            icon: FileText,
           },
           {
-            title: 'View Profile',
-            url: '/vendor/view-profile',
+            title: 'Terms of use',
+            url: '/admin/terms',
+            icon: FileCheck,
+          },
+          {
+            title: 'About Us',
+            url: '/admin/about-us',
+            icon: Info,
+          },
+          {
+            title: 'Policy',
+            url: '/admin/policy',
+            icon: Shield,
           },
         ],
       },

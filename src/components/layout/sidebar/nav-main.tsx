@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/collapsible';
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuAction,
   SidebarMenuButton,
@@ -21,7 +20,6 @@ import {
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
 
 export function NavMain({
   items,
@@ -34,6 +32,7 @@ export function NavMain({
     items?: {
       title: string;
       url: string;
+      icon: LucideIcon;
     }[];
   }[];
   currentPath: string; // ✅ Add this line
@@ -90,11 +89,12 @@ export function NavMain({
                                 asChild
                                 className={cn(
                                   isSubActive
-                                    ? 'bg-gradient-to-t to-green-800 from-green-500/70 text-white font-medium'
+                                    ? 'bg-[#f5f5f5] text-[#000000] font-medium'
                                     : 'hover:bg-muted text-muted-foreground',
                                 )}
                               >
-                                <Link href={subItem.url}>
+                                <Link href={subItem.url} className="mt-1">
+                                  <subItem.icon />
                                   <span>{subItem.title}</span>
                                 </Link>
                               </SidebarMenuSubButton>
