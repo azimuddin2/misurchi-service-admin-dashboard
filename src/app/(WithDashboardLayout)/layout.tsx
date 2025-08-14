@@ -11,7 +11,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -71,10 +70,9 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                       <p className="text-sm text-gray-500">{user?.email}</p>
                     </div>
                   </div>
-                  <DropdownMenuSeparator />
                   <Link href={`/${user?.role}/profile`}>
-                    <DropdownMenuItem className="rounded-[5px] cursor-pointer">
-                      <Edit />
+                    <DropdownMenuItem className="rounded-[5px] cursor-pointer bg-[#165940] text-white hover:text-black">
+                      <Edit className="text-white" />
                       <span>Edit Profile</span>
                     </DropdownMenuItem>
                   </Link>
@@ -82,7 +80,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                     onClick={handleLogout}
                     className="rounded-[5px] text-white bg-red-500 cursor-pointer mt-2"
                   >
-                    <LogOut />
+                    <LogOut className="text-white" />
                     <span>Log Out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
