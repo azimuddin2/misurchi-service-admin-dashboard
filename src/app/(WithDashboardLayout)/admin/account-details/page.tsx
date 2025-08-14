@@ -1,9 +1,9 @@
-import React from 'react';
+import AccountDetails from './_components';
 
 const AccountDetailsPage = () => {
   return (
     <div>
-      <h2>Account Details Page</h2>
+      <AccountDetails />
     </div>
   );
 };
