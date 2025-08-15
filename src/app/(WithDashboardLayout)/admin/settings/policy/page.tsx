@@ -1,7 +1,9 @@
+import PolicyForm from './_components';
+
 const PolicyPage = () => {
   return (
     <div>
-      <h2>Policy Page</h2>
+      <PolicyForm />
     </div>
   );
 };

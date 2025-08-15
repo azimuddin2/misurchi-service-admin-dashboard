@@ -1,9 +1,9 @@
-import PrivacyPolicy from './_components';
+import PrivacyPolicyForm from './_components';
 
 const PrivacyPolicyPage = () => {
   return (
     <div>
-      <PrivacyPolicy />
+      <PrivacyPolicyForm />
     </div>
   );
 };

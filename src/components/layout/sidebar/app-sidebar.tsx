@@ -79,27 +79,27 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       },
       {
         title: 'Settings',
-        url: '/admin/privacy-policy',
+        url: '/admin/settings/privacy-policy',
         icon: Settings,
         items: [
           {
             title: 'Privacy Policy',
-            url: '/admin/privacy-policy',
+            url: '/admin/settings/privacy-policy',
             icon: FileText,
           },
           {
             title: 'Terms of use',
-            url: '/admin/terms',
+            url: '/admin/settings/terms',
             icon: FileCheck,
           },
           {
             title: 'About Us',
-            url: '/admin/about-us',
+            url: '/admin/settings/about-us',
             icon: Info,
           },
           {
             title: 'Policy',
-            url: '/admin/policy',
+            url: '/admin/settings/policy',
             icon: Shield,
           },
         ],

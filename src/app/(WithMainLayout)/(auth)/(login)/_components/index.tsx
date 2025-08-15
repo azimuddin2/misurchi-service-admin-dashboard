@@ -25,6 +25,8 @@ import { setUser, TUser } from '@/redux/features/auth/authSlice';
 import { verifyToken } from '@/utils/verifyToken';
 import { toast } from 'sonner';
 import { AppButton } from '@/components/shared/app-button';
+import logo from '@/assets/images/logo.png';
+import Image from 'next/image';
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -87,6 +89,13 @@ const LoginForm = () => {
     >
       <div className="bg-white p-4 lg:p-6 rounded-xl border shadow-md lg:w-1/3">
         <div>
+          <Image
+            src={logo}
+            alt="logo"
+            width={100}
+            height={100}
+            className="mx-auto mb-5"
+          />
           <h3 className="text-sm text-gray-700 uppercase font-medium">
             Welcome Back
           </h3>
