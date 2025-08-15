@@ -13,61 +13,16 @@ import { format } from 'date-fns';
 import { IUser } from '@/types';
 import { ADTable } from '@/components/modules/ADTable';
 import { useState } from 'react';
+import { useGetAllUsersQuery } from '@/redux/features/user/userApi';
 
 const RecentUserAccount = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
-  // TODO: Sending `users` data to backend
-  const users = [
-    {
-      _id: '66b8a9f3d2a1c1a1e8a00001',
-      fullName: 'Azim Uddin',
-      email: 'azim@example.com',
-      role: 'admin',
-      isDeleted: false,
-      createdAt: '2025-08-01T10:15:30Z',
-    },
-    {
-      _id: '66b8a9f3d2a1c1a1e8a00002',
-      fullName: 'Sarah Khan',
-      email: 'sarah.khan@example.com',
-      role: 'vendor',
-      isDeleted: false,
-      createdAt: '2025-07-28T14:20:00Z',
-    },
-    {
-      _id: '66b8a9f3d2a1c1a1e8a00003',
-      fullName: 'John Smith',
-      email: 'john.smith@example.com',
-      role: 'user',
-      isDeleted: true,
-      createdAt: '2025-07-15T09:45:10Z',
-    },
-    {
-      _id: '66b8a9f3d2a1c1a1e8a00004',
-      fullName: 'Emily Brown',
-      email: 'emily.brown@example.com',
-      role: 'vendor',
-      isDeleted: false,
-      createdAt: '2025-06-30T18:05:45Z',
-    },
-    {
-      _id: '66b8a9f3d2a1c1a1e8a00005',
-      fullName: 'Michael Lee',
-      email: 'michael.lee@example.com',
-      role: 'user',
-      isDeleted: false,
-      createdAt: '2025-06-20T11:25:00Z',
-    },
-    {
-      _id: '66b8a9f3d2a1c1a1e8a00006',
-      fullName: 'Sophia Garcia',
-      email: 'sophia.garcia@example.com',
-      role: 'vendor',
-      isDeleted: false,
-      createdAt: '2025-06-10T07:50:30Z',
-    },
-  ];
+  const { data, refetch } = useGetAllUsersQuery({
+    query: {},
+  });
+
+  const users = data?.data?.slice(0, 6) || [];
 
   const columns: ColumnDef<IUser>[] = [
     {

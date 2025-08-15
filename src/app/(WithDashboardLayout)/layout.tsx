@@ -59,9 +59,9 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="rounded-[10px] mt-2 w-80 mr-6 p-3">
                   <div>
-                    <Avatar className="mx-auto w-14 h-14 border border-[#093954]">
+                    <Avatar className="mx-auto w-14 h-14">
                       <AvatarImage src={user?.image} />
-                      <AvatarFallback className="bg-[#093954] text-white text-2xl">
+                      <AvatarFallback className="bg-[#165940] text-white text-2xl">
                         {user?.name?.slice(0, 1)}
                       </AvatarFallback>
                     </Avatar>
@@ -71,8 +71,8 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                     </div>
                   </div>
                   <Link href={`/${user?.role}/profile`}>
-                    <DropdownMenuItem className="rounded-[5px] cursor-pointer bg-[#165940] text-white hover:text-black">
-                      <Edit className="text-white" />
+                    <DropdownMenuItem className="rounded-[5px] cursor-pointe bg-[#EBF0EE]">
+                      <Edit />
                       <span>Edit Profile</span>
                     </DropdownMenuItem>
                   </Link>
