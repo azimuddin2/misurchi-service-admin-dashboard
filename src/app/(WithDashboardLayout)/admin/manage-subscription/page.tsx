@@ -1,7 +1,9 @@
+import ManageSubscription from './_components';
+
 const ManageSubscriptionPage = () => {
   return (
     <div>
-      <h2>Manage Subscription</h2>
+      <ManageSubscription />
     </div>
   );
 };

@@ -1,5 +1,11 @@
+import ReferEarn from './_components';
+
 const ReferEarnPage = () => {
-  return <h2>Refer earn</h2>;
+  return (
+    <div>
+      <ReferEarn />
+    </div>
+  );
 };
 
 export default ReferEarnPage;

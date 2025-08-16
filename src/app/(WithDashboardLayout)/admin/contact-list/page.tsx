@@ -1,9 +1,9 @@
-import React from 'react';
+import ContactList from './_components';
 
 const ContactListPage = () => {
   return (
     <div>
-      <h2>Contact List Page</h2>
+      <ContactList />
     </div>
   );
 };

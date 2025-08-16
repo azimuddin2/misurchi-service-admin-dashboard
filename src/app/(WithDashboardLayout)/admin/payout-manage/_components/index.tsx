@@ -1,7 +1,7 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { Search } from 'lucide-react';
+import { Eye, Search } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { format, parseISO } from 'date-fns';
 import { ADTable } from '@/components/modules/ADTable';
@@ -9,18 +9,23 @@ import { useCallback, useEffect, useState } from 'react';
 import ADPagination from '@/components/modules/ADPagination';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
-type TCommissionEarnings = {
+type TPayout = {
   _id: string;
-  providerName: string;
-  itemNumber: string;
-  transactionPrice: number;
-  commission: string;
-  offerType: 'Service' | 'Product';
-  transactionDate: string; // ISO date string
+  name: string;
+  availableBalance: string;
+  method: string;
+  requestDate: string;
+  status: 'Pending' | 'Reject' | 'Paid';
 };
 
-const CommissionEarnings = () => {
+const PayoutManage = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const searchParams = useSearchParams();
@@ -52,96 +57,86 @@ const CommissionEarnings = () => {
   // const users = data?.data || [];
   // const meta = data?.meta || { totalPage: 1 };
 
-  const commissionEarnings = [
+  const payouts = [
     {
       _id: '1',
-      providerName: 'Netflix',
-      itemNumber: 'NF-2025-001',
-      transactionPrice: 15.99,
-      commission: '10%',
-      offerType: 'Service',
-      transactionDate: '2025-08-01',
+      name: 'Azim Uddin',
+      availableBalance: '120.50',
+      method: 'PayPal',
+      requestDate: '2025-08-01',
+      status: 'Pending',
     },
     {
       _id: '2',
-      providerName: 'Spotify',
-      itemNumber: 'SP-2025-002',
-      transactionPrice: 99.99,
-      commission: '12%',
-      offerType: 'Product',
-      transactionDate: '2025-07-15',
+      name: 'John Doe',
+      availableBalance: '450.00',
+      method: 'Bank Transfer',
+      requestDate: '2025-07-30',
+      status: 'Paid',
     },
     {
       _id: '3',
-      providerName: 'Adobe Creative Cloud',
-      itemNumber: 'AD-2025-003',
-      transactionPrice: 52.99,
-      commission: '15%',
-      offerType: 'Service',
-      transactionDate: '2025-07-10',
+      name: 'Emily Smith',
+      availableBalance: '75.20',
+      method: 'Payoneer',
+      requestDate: '2025-07-28',
+      status: 'Reject',
     },
     {
       _id: '4',
-      providerName: 'Microsoft 365',
-      itemNumber: 'MS-2025-004',
-      transactionPrice: 69.99,
-      commission: '8%',
-      offerType: 'Service',
-      transactionDate: '2025-06-28',
+      name: 'Michael Brown',
+      availableBalance: '600.75',
+      method: 'PayPal',
+      requestDate: '2025-07-25',
+      status: 'Paid',
     },
     {
       _id: '5',
-      providerName: 'Amazon',
-      itemNumber: 'AMZ-2025-005',
-      transactionPrice: 120.0,
-      commission: '5%',
-      offerType: 'Product',
-      transactionDate: '2025-06-15',
+      name: 'Sophia Johnson',
+      availableBalance: '250.00',
+      method: 'Stripe',
+      requestDate: '2025-07-20',
+      status: 'Pending',
     },
     {
       _id: '6',
-      providerName: 'eBay',
-      itemNumber: 'EBY-2025-006',
-      transactionPrice: 45.5,
-      commission: '7%',
-      offerType: 'Service',
-      transactionDate: '2025-06-10',
+      name: 'David Wilson',
+      availableBalance: '900.10',
+      method: 'Bank Transfer',
+      requestDate: '2025-07-18',
+      status: 'Reject',
     },
     {
       _id: '7',
-      providerName: 'Shopify',
-      itemNumber: 'SHP-2025-007',
-      transactionPrice: 200.0,
-      commission: '10%',
-      offerType: 'Product',
-      transactionDate: '2025-05-25',
+      name: 'Olivia Martinez',
+      availableBalance: '150.40',
+      method: 'Payoneer',
+      requestDate: '2025-07-15',
+      status: 'Pending',
     },
     {
       _id: '8',
-      providerName: 'Udemy',
-      itemNumber: 'UDM-2025-008',
-      transactionPrice: 19.99,
-      commission: '20%',
-      offerType: 'Service',
-      transactionDate: '2025-05-12',
+      name: 'Liam Anderson',
+      availableBalance: '300.00',
+      method: 'Stripe',
+      requestDate: '2025-07-12',
+      status: 'Paid',
     },
     {
       _id: '9',
-      providerName: 'Apple',
-      itemNumber: 'APL-2025-009',
-      transactionPrice: 999.0,
-      commission: '6%',
-      offerType: 'Product',
-      transactionDate: '2025-04-30',
+      name: 'Emma Davis',
+      availableBalance: '720.30',
+      method: 'PayPal',
+      requestDate: '2025-07-10',
+      status: 'Reject',
     },
     {
       _id: '10',
-      providerName: 'Google Cloud',
-      itemNumber: 'GCP-2025-010',
-      transactionPrice: 250.0,
-      commission: '18%',
-      offerType: 'Service',
-      transactionDate: '2025-04-20',
+      name: 'Daniel Thomas',
+      availableBalance: '50.00',
+      method: 'Bank Transfer',
+      requestDate: '2025-07-05',
+      status: 'Pending',
     },
   ];
   const meta = { totalPage: 1 };
@@ -186,7 +181,7 @@ const CommissionEarnings = () => {
   }, [searchParams]);
 
   // Table columns
-  const columns: ColumnDef<TCommissionEarnings>[] = [
+  const columns: ColumnDef<TPayout>[] = [
     {
       id: 'select',
       header: ({ table }) => (
@@ -220,35 +215,64 @@ const CommissionEarnings = () => {
       cell: ({ row }) => String(row.index + 1).padStart(2, '0'),
     },
     {
-      accessorKey: 'providerName',
-      header: 'Provider Name',
-      cell: ({ row }) => <span>{row.original.providerName}</span>,
+      accessorKey: 'name',
+      header: 'Name',
+      cell: ({ row }) => <span>{row.original.name}</span>,
     },
     {
-      accessorKey: 'itemNumber',
-      header: 'Item Number',
-      cell: ({ row }) => <span>{row.original.itemNumber}</span>,
+      accessorKey: 'availableBalance',
+      header: 'Available Balance',
+      cell: ({ row }) => <span>${row.original.availableBalance}</span>,
     },
     {
-      accessorKey: 'transactionPrice',
-      header: 'Transaction Price',
-      cell: ({ row }) => <span>${row.original.transactionPrice}</span>,
+      accessorKey: 'method',
+      header: 'Method',
+      cell: ({ row }) => <span>{row.original.method}</span>,
     },
     {
-      accessorKey: 'commission',
-      header: 'Commission %',
-      cell: ({ row }) => <span>{row.original.commission}</span>,
-    },
-    {
-      accessorKey: 'offerType',
-      header: 'Offer Type',
-      cell: ({ row }) => <span>{row.original.offerType}</span>,
-    },
-    {
-      accessorKey: 'transactionDate',
-      header: 'Transaction Date',
+      accessorKey: 'requestDate',
+      header: 'Request Date',
       cell: ({ row }) =>
-        format(new Date(row.original.transactionDate), 'dd MMM, yyyy'),
+        format(new Date(row.original.requestDate), 'dd MMM, yyyy'),
+    },
+    {
+      accessorKey: 'status',
+      header: 'Status',
+      cell: ({ row }) => {
+        const status = row.original.status;
+        let statusColor = 'text-gray-600 bg-gray-100'; // default
+
+        if (status === 'Pending') statusColor = 'text-yellow-600 bg-yellow-100';
+        if (status === 'Paid') statusColor = 'text-green-600 bg-green-100';
+        if (status === 'Reject') statusColor = 'text-red-600 bg-red-100';
+
+        return (
+          <span
+            className={`px-3 py-1 rounded-full text-sm font-medium ${statusColor}`}
+          >
+            {status}
+          </span>
+        );
+      },
+    },
+    {
+      accessorKey: 'action',
+      header: 'Action',
+      cell: ({ row }) => (
+        <div className="flex items-center space-x-3">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <Eye
+                  size={22}
+                  className="text-[#78C0A8] cursor-pointer hover:text-[#165940]"
+                />
+              </TooltipTrigger>
+              <TooltipContent>View</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      ),
     },
   ];
 
@@ -261,7 +285,7 @@ const CommissionEarnings = () => {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search products..."
+            placeholder="Search..."
             className="border px-4 py-6 pr-12 rounded w-full"
           />
           <button
@@ -286,11 +310,11 @@ const CommissionEarnings = () => {
       </div>
 
       <div>
-        <ADTable columns={columns} data={commissionEarnings || []} />
+        <ADTable columns={columns} data={payouts || []} />
       </div>
       <ADPagination totalPage={meta?.totalPage} />
     </div>
   );
 };
 
-export default CommissionEarnings;
+export default PayoutManage;

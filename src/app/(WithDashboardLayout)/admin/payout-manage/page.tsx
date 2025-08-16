@@ -1,9 +1,9 @@
-import React from 'react';
+import PayoutManage from './_components';
 
 const PayoutManagePage = () => {
   return (
     <div>
-      <h2>Payout Manage Page</h2>
+      <PayoutManage />
     </div>
   );
 };

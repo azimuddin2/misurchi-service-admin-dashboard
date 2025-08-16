@@ -46,11 +46,11 @@ const Earning = () => {
         </Card>
       </div>
       <Tabs defaultValue="subscription" className="w-full mx-auto">
-        <TabsList className="flex rounded-md shadow-md w-full py-5 max-w-6xl mx-auto">
+        <TabsList className="flex rounded-md w-full py-5 lg:max-w-6xl gap-1 mx-auto gap-0 lg:gap-3 shadow-none">
           {/* Subscription Tab */}
           <TabsTrigger
             value="subscription"
-            className="w-full cursor-pointer text-[#165940] text-lg rounded-md font-medium py-6 transition 
+            className="w-full cursor-pointer text-[#165940] bg-white text-lg rounded-md font-medium py-6 transition 
             data-[state=active]:bg-gradient-to-t 
             data-[state=active]:from-[#cadfe7] 
             data-[state=active]:to-[#d9ebe8] 
@@ -63,7 +63,7 @@ const Earning = () => {
           {/* Commission Tab */}
           <TabsTrigger
             value="commission"
-            className="w-full cursor-pointer text-[#165940] text-lg rounded-md font-medium py-6 transition 
+            className="w-full cursor-pointer text-[#165940] bg-white text-lg rounded-md font-medium py-6 transition 
             data-[state=active]:bg-gradient-to-t 
             data-[state=active]:from-[#cadfe7] 
             data-[state=active]:to-[#d9ebe8] 

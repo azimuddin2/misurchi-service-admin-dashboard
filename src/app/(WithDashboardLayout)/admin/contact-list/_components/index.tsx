@@ -1,7 +1,7 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { Search } from 'lucide-react';
+import { Eye, Search } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { format, parseISO } from 'date-fns';
 import { ADTable } from '@/components/modules/ADTable';
@@ -9,18 +9,22 @@ import { useCallback, useEffect, useState } from 'react';
 import ADPagination from '@/components/modules/ADPagination';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
-type TCommissionEarnings = {
+type TContact = {
   _id: string;
-  providerName: string;
-  itemNumber: string;
-  transactionPrice: number;
-  commission: string;
-  offerType: 'Service' | 'Product';
-  transactionDate: string; // ISO date string
+  firstName: string;
+  lastName: string;
+  email: string;
+  date: string;
 };
 
-const CommissionEarnings = () => {
+const ContactList = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const searchParams = useSearchParams();
@@ -52,96 +56,76 @@ const CommissionEarnings = () => {
   // const users = data?.data || [];
   // const meta = data?.meta || { totalPage: 1 };
 
-  const commissionEarnings = [
+  const payouts = [
     {
-      _id: '1',
-      providerName: 'Netflix',
-      itemNumber: 'NF-2025-001',
-      transactionPrice: 15.99,
-      commission: '10%',
-      offerType: 'Service',
-      transactionDate: '2025-08-01',
+      _id: 'c1',
+      firstName: 'James',
+      lastName: 'Anderson',
+      email: 'james.anderson@example.com',
+      date: '2025-07-01T09:15:00.000Z',
     },
     {
-      _id: '2',
-      providerName: 'Spotify',
-      itemNumber: 'SP-2025-002',
-      transactionPrice: 99.99,
-      commission: '12%',
-      offerType: 'Product',
-      transactionDate: '2025-07-15',
+      _id: 'c2',
+      firstName: 'Sophia',
+      lastName: 'Martinez',
+      email: 'sophia.martinez@example.com',
+      date: '2025-07-02T10:45:00.000Z',
     },
     {
-      _id: '3',
-      providerName: 'Adobe Creative Cloud',
-      itemNumber: 'AD-2025-003',
-      transactionPrice: 52.99,
-      commission: '15%',
-      offerType: 'Service',
-      transactionDate: '2025-07-10',
+      _id: 'c3',
+      firstName: 'Liam',
+      lastName: 'Walker',
+      email: 'liam.walker@example.com',
+      date: '2025-07-03T14:30:00.000Z',
     },
     {
-      _id: '4',
-      providerName: 'Microsoft 365',
-      itemNumber: 'MS-2025-004',
-      transactionPrice: 69.99,
-      commission: '8%',
-      offerType: 'Service',
-      transactionDate: '2025-06-28',
+      _id: 'c4',
+      firstName: 'Olivia',
+      lastName: 'Brown',
+      email: 'olivia.brown@example.com',
+      date: '2025-07-04T16:20:00.000Z',
     },
     {
-      _id: '5',
-      providerName: 'Amazon',
-      itemNumber: 'AMZ-2025-005',
-      transactionPrice: 120.0,
-      commission: '5%',
-      offerType: 'Product',
-      transactionDate: '2025-06-15',
+      _id: 'c5',
+      firstName: 'Ethan',
+      lastName: 'Harris',
+      email: 'ethan.harris@example.com',
+      date: '2025-07-05T11:10:00.000Z',
     },
     {
-      _id: '6',
-      providerName: 'eBay',
-      itemNumber: 'EBY-2025-006',
-      transactionPrice: 45.5,
-      commission: '7%',
-      offerType: 'Service',
-      transactionDate: '2025-06-10',
+      _id: 'c6',
+      firstName: 'Ava',
+      lastName: 'Wilson',
+      email: 'ava.wilson@example.com',
+      date: '2025-07-06T13:55:00.000Z',
     },
     {
-      _id: '7',
-      providerName: 'Shopify',
-      itemNumber: 'SHP-2025-007',
-      transactionPrice: 200.0,
-      commission: '10%',
-      offerType: 'Product',
-      transactionDate: '2025-05-25',
+      _id: 'c7',
+      firstName: 'Noah',
+      lastName: 'Taylor',
+      email: 'noah.taylor@example.com',
+      date: '2025-07-07T08:40:00.000Z',
     },
     {
-      _id: '8',
-      providerName: 'Udemy',
-      itemNumber: 'UDM-2025-008',
-      transactionPrice: 19.99,
-      commission: '20%',
-      offerType: 'Service',
-      transactionDate: '2025-05-12',
+      _id: 'c8',
+      firstName: 'Mia',
+      lastName: 'Clark',
+      email: 'mia.clark@example.com',
+      date: '2025-07-08T15:05:00.000Z',
     },
     {
-      _id: '9',
-      providerName: 'Apple',
-      itemNumber: 'APL-2025-009',
-      transactionPrice: 999.0,
-      commission: '6%',
-      offerType: 'Product',
-      transactionDate: '2025-04-30',
+      _id: 'c9',
+      firstName: 'William',
+      lastName: 'Hall',
+      email: 'william.hall@example.com',
+      date: '2025-07-09T12:25:00.000Z',
     },
     {
-      _id: '10',
-      providerName: 'Google Cloud',
-      itemNumber: 'GCP-2025-010',
-      transactionPrice: 250.0,
-      commission: '18%',
-      offerType: 'Service',
-      transactionDate: '2025-04-20',
+      _id: 'c10',
+      firstName: 'Isabella',
+      lastName: 'Scott',
+      email: 'isabella.scott@example.com',
+      date: '2025-07-10T17:45:00.000Z',
     },
   ];
   const meta = { totalPage: 1 };
@@ -186,7 +170,7 @@ const CommissionEarnings = () => {
   }, [searchParams]);
 
   // Table columns
-  const columns: ColumnDef<TCommissionEarnings>[] = [
+  const columns: ColumnDef<TContact>[] = [
     {
       id: 'select',
       header: ({ table }) => (
@@ -220,35 +204,43 @@ const CommissionEarnings = () => {
       cell: ({ row }) => String(row.index + 1).padStart(2, '0'),
     },
     {
-      accessorKey: 'providerName',
-      header: 'Provider Name',
-      cell: ({ row }) => <span>{row.original.providerName}</span>,
+      accessorKey: 'firstName',
+      header: 'First Name',
+      cell: ({ row }) => <span>{row.original.firstName}</span>,
     },
     {
-      accessorKey: 'itemNumber',
-      header: 'Item Number',
-      cell: ({ row }) => <span>{row.original.itemNumber}</span>,
+      accessorKey: 'lastName',
+      header: 'Last Name',
+      cell: ({ row }) => <span>${row.original.lastName}</span>,
     },
     {
-      accessorKey: 'transactionPrice',
-      header: 'Transaction Price',
-      cell: ({ row }) => <span>${row.original.transactionPrice}</span>,
+      accessorKey: 'email',
+      header: 'Email',
+      cell: ({ row }) => <span>{row.original.email}</span>,
     },
     {
-      accessorKey: 'commission',
-      header: 'Commission %',
-      cell: ({ row }) => <span>{row.original.commission}</span>,
+      accessorKey: 'date',
+      header: 'Date',
+      cell: ({ row }) => format(new Date(row.original.date), 'dd MMM, yyyy'),
     },
     {
-      accessorKey: 'offerType',
-      header: 'Offer Type',
-      cell: ({ row }) => <span>{row.original.offerType}</span>,
-    },
-    {
-      accessorKey: 'transactionDate',
-      header: 'Transaction Date',
-      cell: ({ row }) =>
-        format(new Date(row.original.transactionDate), 'dd MMM, yyyy'),
+      accessorKey: 'action',
+      header: 'Action',
+      cell: ({ row }) => (
+        <div className="flex items-center space-x-3">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <Eye
+                  size={22}
+                  className="text-[#78C0A8] cursor-pointer hover:text-[#165940]"
+                />
+              </TooltipTrigger>
+              <TooltipContent>View</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      ),
     },
   ];
 
@@ -261,7 +253,7 @@ const CommissionEarnings = () => {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search products..."
+            placeholder="Search..."
             className="border px-4 py-6 pr-12 rounded w-full"
           />
           <button
@@ -286,11 +278,11 @@ const CommissionEarnings = () => {
       </div>
 
       <div>
-        <ADTable columns={columns} data={commissionEarnings || []} />
+        <ADTable columns={columns} data={payouts || []} />
       </div>
       <ADPagination totalPage={meta?.totalPage} />
     </div>
   );
 };
 
-export default CommissionEarnings;
+export default ContactList;
