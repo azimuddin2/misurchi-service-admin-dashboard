@@ -1,7 +1,9 @@
+import Earning from './_components';
+
 const EarningPage = () => {
   return (
     <div>
-      <h2>Earning Page</h2>
+      <Earning />
     </div>
   );
 };

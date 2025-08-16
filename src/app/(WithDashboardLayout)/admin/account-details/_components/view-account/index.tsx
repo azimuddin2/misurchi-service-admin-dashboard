@@ -1,8 +1,6 @@
 'use client';
 
 import { Card } from '@/components/ui/card';
-import Image from 'next/image';
-import userImg from '@/assets/images/user.png';
 import { useGetUserByIdQuery } from '@/redux/features/user/userApi';
 import { IUser } from '@/types';
 import { format } from 'date-fns';
@@ -108,6 +106,7 @@ const ViewAccount = ({ userId }: Props) => {
           </div>
         </Card>
       </div>
+      <div></div>
     </div>
   );
 };
