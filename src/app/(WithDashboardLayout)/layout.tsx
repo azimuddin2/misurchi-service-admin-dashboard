@@ -17,7 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { logout, selectCurrentUser } from '@/redux/features/auth/authSlice';
 import Link from 'next/link';
-import { Bell, Edit, LogOut } from 'lucide-react';
+import { Bell, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 
@@ -42,14 +42,16 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
               <SidebarTrigger className="-ml-1" />
             </div>
             <div className="flex justify-center items-center gap-3">
-              <Button className="relative p-2 rounded-full shadow bg-white hover:bg-gray-100">
-                <Bell className="h-12 w-12 text-gray-700" />
+              <Link href={'/admin/notification'}>
+                <Button className="relative p-2 rounded-full shadow bg-white hover:bg-gray-100">
+                  <Bell className="h-12 w-12 text-gray-700" />
 
-                {/* Notification badge */}
-                <span className="absolute -top-1 right-1 w-5 h-5 bg-[#165940] text-white text-xs font-bold rounded-full flex items-center justify-center">
-                  {0}
-                </span>
-              </Button>
+                  {/* Notification badge */}
+                  <span className="absolute -top-1 right-1 w-5 h-5 bg-[#165940] text-white text-xs font-bold rounded-full flex items-center justify-center">
+                    {0}
+                  </span>
+                </Button>
+              </Link>
               <DropdownMenu>
                 <DropdownMenuTrigger>
                   <Avatar className="cursor-pointer w-10 h-10 border-2 border-black">
@@ -72,8 +74,8 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                   </div>
                   <Link href={`/${user?.role}/profile`}>
                     <DropdownMenuItem className="rounded-[5px] cursor-pointe bg-[#EBF0EE]">
-                      <Edit />
-                      <span>Edit Profile</span>
+                      <User />
+                      <span>Profile</span>
                     </DropdownMenuItem>
                   </Link>
                   <DropdownMenuItem

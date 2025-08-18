@@ -211,7 +211,7 @@ const ContactList = () => {
     {
       accessorKey: 'lastName',
       header: 'Last Name',
-      cell: ({ row }) => <span>${row.original.lastName}</span>,
+      cell: ({ row }) => <span>{row.original.lastName}</span>,
     },
     {
       accessorKey: 'email',

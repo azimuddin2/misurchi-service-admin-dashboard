@@ -1,7 +1,9 @@
+'use client';
+
 import Link from 'next/link';
 import { ArrowRight, PlusCircle } from 'lucide-react';
 import checkIcon from '@/assets/icons/check.png';
-import xIcon from '@/assets/icons/x.png';
+import closeIcon from '@/assets/icons/close.png';
 import Image from 'next/image';
 import { AppButton } from '@/components/shared/app-button';
 
@@ -44,7 +46,7 @@ const ManageSubscription = () => {
               <span>Cost: Free</span>
             </li>
             <li className="flex items-center gap-2">
-              <Image src={xIcon} alt="x" width={16} />
+              <Image src={closeIcon} alt="x" width={16} />
               <span>Add Team Members: No</span>
             </li>
             <li className="flex items-center gap-2">
@@ -56,7 +58,7 @@ const ManageSubscription = () => {
               <span>Add Service Max: 10</span>
             </li>
             <li className="flex items-center gap-2">
-              <Image src={xIcon} alt="x" width={16} />
+              <Image src={closeIcon} alt="x" width={16} />
               <span>Grant permission Access: No</span>
             </li>
             <li className="flex items-center gap-2">
@@ -68,7 +70,7 @@ const ManageSubscription = () => {
               <span>Transaction percentage: 7.5%</span>
             </li>
             <li className="flex items-center gap-2">
-              <Image src={xIcon} alt="x" width={16} />
+              <Image src={closeIcon} alt="x" width={16} />
               <span>Shared Calendar: No</span>
             </li>
             <li className="flex items-center gap-2">
@@ -76,7 +78,7 @@ const ManageSubscription = () => {
               <span>Highlight offering Max 1</span>
             </li>
             <li className="flex items-center gap-2">
-              <Image src={xIcon} alt="x" width={16} />
+              <Image src={closeIcon} alt="x" width={16} />
               <span>Task Hub: No</span>
             </li>
           </ul>

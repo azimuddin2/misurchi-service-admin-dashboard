@@ -56,7 +56,11 @@ const ADPagination = ({ totalPage }: { totalPage: number }) => {
           onClick={() => updatePage(index + 1)}
           variant={currentPage === index + 1 ? 'default' : 'outline'}
           size="sm"
-          className="w-8 h-8 rounded-full flex justify-center items-center bg-[#165940]"
+          className={`w-8 h-8 rounded-full flex justify-center items-center ${
+            currentPage === index + 1
+              ? 'bg-[#165940] hover:bg-[#165940]/90 text-white'
+              : ''
+          }`}
         >
           {index + 1}
         </Button>

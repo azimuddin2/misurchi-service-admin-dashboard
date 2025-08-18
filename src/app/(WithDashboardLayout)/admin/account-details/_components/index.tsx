@@ -218,9 +218,7 @@ const AccountDetails = () => {
         />
       </div>
 
-      <div className="h-screen">
-        <ADTable columns={columns} data={users || []} />
-      </div>
+      <ADTable columns={columns} data={users || []} />
       <ADPagination totalPage={meta?.totalPage} />
     </div>
   );
