@@ -24,7 +24,7 @@ type TContact = {
   date: string;
 };
 
-const ContactList = () => {
+const CustomerSupport = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const searchParams = useSearchParams();
@@ -285,4 +285,4 @@ const ContactList = () => {
   );
 };
 
-export default ContactList;
+export default CustomerSupport;

@@ -10,11 +10,10 @@ import {
   FileCheck,
   Shield,
   Info,
-  Receipt,
   Crown,
   DollarSign,
   Star,
-  Mail,
+  Headset,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -73,9 +72,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         icon: Star,
       },
       {
-        title: 'Contact List',
-        url: `/admin/contact-list`,
-        icon: Mail,
+        title: 'Customer Support',
+        url: `/admin/customer-support`,
+        icon: Headset,
       },
       {
         title: 'Settings',
