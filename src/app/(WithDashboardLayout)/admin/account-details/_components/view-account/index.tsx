@@ -21,8 +21,6 @@ const ViewAccount = ({ email }: Props) => {
   const { data: vendorData } = useGetVendorProfileQuery(user?.email as string);
   const vendorId = vendorData?.data?._id as string;
 
-  console.log(vendorId);
-
   const joinDate = user?.createdAt
     ? format(new Date(user.createdAt), 'dd MMM, yyyy')
     : '';

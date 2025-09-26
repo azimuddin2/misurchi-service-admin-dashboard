@@ -77,16 +77,16 @@ export function ADTable<TData, TValue>({
             <TableRow>
               <TableCell
                 colSpan={columns.length}
-                className="h-screen text-center px-5 lg:px-10"
+                className="text-center px-5 lg:px-10"
               >
                 <Image
                   src="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
                   alt="No results"
                   width={100}
                   height={100}
-                  className="mx-auto"
+                  className="mx-auto w-40 mt-20"
                 />
-                No results.
+                <span className="text-sm font-medium">No Results.</span>
               </TableCell>
             </TableRow>
           )}

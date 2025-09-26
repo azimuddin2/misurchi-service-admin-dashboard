@@ -10,39 +10,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Edit, Eye, PlusCircle, Search, Trash2 } from 'lucide-react';
+import { Eye, Search } from 'lucide-react';
 import { useAppSelector } from '@/redux/hooks';
 import { selectCurrentUser } from '@/redux/features/auth/authSlice';
 import Image from 'next/image';
 import { format, parseISO } from 'date-fns';
-import { AppButton } from '@/components/shared/app-button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
-import Link from 'next/link';
-import { useGetVendorProfileQuery } from '@/redux/features/vendor/vendorApi';
 import { useGetAllProductsByUserQuery } from '@/redux/features/product/productApi';
 import Spinner from '@/components/shared/Spinner';
 import { ADTable } from '@/components/modules/ADTable';
 import ADPagination from '@/components/modules/ADPagination';
-
-const statusOptions = [
-  { label: 'Available', key: 'Available' },
-  { label: 'Out of Stock', key: 'Out of Stock' },
-  { label: 'TBC', key: 'TBC' },
-  { label: 'Discontinued', key: 'Discontinued' },
-];
-
-const highlightstatusOptions = [
-  { label: 'Highlight', key: 'Highlight' },
-  { label: 'Highlighted', key: 'Highlighted' },
-];
 
 type Props = {
   vendorId: string;
@@ -53,9 +31,6 @@ const Products = ({ vendorId }: Props) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  console.log(vendorId);
-
-  const [isModalOpen, setModalOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -126,13 +101,6 @@ const Products = ({ vendorId }: Props) => {
     }
   }, [searchParams]);
 
-  // API call here backend
-  const handleDelete = (data: TProduct) => {
-    setSelectedId(data?._id);
-    setSelectedItem(data?.name);
-    setModalOpen(true);
-  };
-
   const columns: ColumnDef<TProduct>[] = [
     {
       id: 'select',
@@ -167,6 +135,7 @@ const Products = ({ vendorId }: Props) => {
       cell: ({ row }) => {
         const { images, name } = row.original;
         const imageUrl = images?.[0]?.url || '/placeholder.png';
+        console.log(imageUrl);
         return (
           <div className="flex items-start space-x-3">
             <Image
@@ -212,38 +181,10 @@ const Products = ({ vendorId }: Props) => {
                     )
                   }
                   size={20}
-                  className="text-blue-400 cursor-pointer"
+                  className="text-blue-500 cursor-pointer"
                 />
               </TooltipTrigger>
               <TooltipContent>View</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <Edit
-                  onClick={() =>
-                    router.push(
-                      `/${user?.role}/manage-offering/update-product/${row.original._id}`,
-                    )
-                  }
-                  size={20}
-                  className="text-green-500 cursor-pointer"
-                />
-              </TooltipTrigger>
-              <TooltipContent>Edit</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <Trash2
-                  onClick={() => handleDelete(row.original)}
-                  size={20}
-                  className="text-red-500 cursor-pointer"
-                />
-              </TooltipTrigger>
-              <TooltipContent>Delete</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
@@ -265,11 +206,11 @@ const Products = ({ vendorId }: Props) => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search products..."
-            className="border px-4 py-5 pr-12 rounded w-full"
+            className="border px-4 py-6 pr-12 rounded w-full"
           />
           <button
             onClick={handleSearch}
-            className="absolute top-1/2 right-0 -translate-y-1/2 px-3 py-2 bg-[#003250] text-white rounded cursor-pointer"
+            className="absolute top-1/2 right-0 -translate-y-1/2 px-3 py-3 bg-[#165940] text-white rounded cursor-pointer"
           >
             <Search />
           </button>
@@ -289,8 +230,8 @@ const Products = ({ vendorId }: Props) => {
       </div>
 
       {/* Header */}
-      <div className="flex justify-between items-center mt-10 mb-2">
-        <h2 className="text-xl font-medium">Manage Products</h2>
+      <div className="flex justify-between items-center mt-5 mb-2">
+        {/* <h2 className="text-xl font-medium">Products</h2> */}
       </div>
 
       {/* Table & Pagination */}
