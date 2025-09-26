@@ -32,9 +32,9 @@ const userApi = baseApi.injectEndpoints({
       providesTags: ['User'],
     }),
 
-    getUserById: builder.query<TResponse<IUser>, string>({
-      query: (id) => ({
-        url: `/users/${id}`,
+    getUserProfile: builder.query<TResponse<IUser>, string>({
+      query: (email) => ({
+        url: `/users/profile/${email}`,
         method: 'GET',
         credentials: 'include',
       }),
@@ -43,4 +43,4 @@ const userApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetAllUsersQuery, useGetUserByIdQuery } = userApi;
+export const { useGetAllUsersQuery, useGetUserProfileQuery } = userApi;

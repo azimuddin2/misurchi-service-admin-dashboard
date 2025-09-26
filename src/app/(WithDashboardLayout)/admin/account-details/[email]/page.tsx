@@ -1,9 +1,9 @@
 import ViewAccount from '../_components/view-account';
 
-const ViewAccountPage = ({ params }: { params: { id: string } }) => {
+const ViewAccountPage = ({ params }: { params: { email: string } }) => {
   return (
     <div>
-      <ViewAccount userId={params.id} />
+      <ViewAccount email={params.email} />
     </div>
   );
 };

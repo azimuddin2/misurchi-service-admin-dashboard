@@ -19,6 +19,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { logout, selectCurrentUser } from '@/redux/features/auth/authSlice';
+import Cookies from 'js-cookie';
 
 export function NavUser() {
   const { isMobile } = useSidebar();
@@ -28,7 +29,12 @@ export function NavUser() {
   const router = useRouter();
 
   const handleLogout = () => {
+    // 1. Clear redux user state
     dispatch(logout());
+
+    // 2. Remove cookie from client
+    Cookies.remove('accessToken');
+
     router.push('/');
   };
 

@@ -1,25 +1,34 @@
 'use client';
 
 import { Card } from '@/components/ui/card';
-import { useGetUserByIdQuery } from '@/redux/features/user/userApi';
+import { useGetUserProfileQuery } from '@/redux/features/user/userApi';
 import { IUser } from '@/types';
 import { format } from 'date-fns';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import Products from './products';
+import Services from './services';
+import { useGetVendorProfileQuery } from '@/redux/features/vendor/vendorApi';
 
 type Props = {
-  userId: string;
+  email: string;
 };
 
-const ViewAccount = ({ userId }: Props) => {
-  const { data } = useGetUserByIdQuery(userId);
+const ViewAccount = ({ email }: Props) => {
+  const { data } = useGetUserProfileQuery(email);
   const user: IUser | undefined = data?.data;
+
+  const { data: vendorData } = useGetVendorProfileQuery(user?.email as string);
+  const vendorId = vendorData?.data?._id as string;
+
+  console.log(vendorId);
 
   const joinDate = user?.createdAt
     ? format(new Date(user.createdAt), 'dd MMM, yyyy')
     : '';
 
   return (
-    <div>
+    <div className="lg:flex">
       {/* Profile Section */}
       <div className="w-full lg:w-1/4">
         <Card className="overflow-hidden border-none p-3 shadow-none">
@@ -106,7 +115,69 @@ const ViewAccount = ({ userId }: Props) => {
           </div>
         </Card>
       </div>
-      <div></div>
+
+      {/* Product & Service Section  */}
+      <div className="w-full max-w-6xl mx-auto mt-5 lg:mt-0">
+        <Tabs defaultValue="products" className="w-full max-w-6xl mx-auto">
+          <TabsList
+            style={{ background: 'none' }}
+            className="flex rounded-md w-full py-5 lg:max-w-6xl gap-1 mx-auto lg:gap-3 shadow-none"
+          >
+            {/* Products Tab */}
+            <TabsTrigger
+              value="products"
+              className="relative w-full cursor-pointer text-[#165940] bg-white text-lg 
+    rounded-md font-medium py-6 transition
+    data-[state=active]:text-[#165940] 
+    data-[state=active]:shadow
+    data-[state=active]:bg-gradient-to-b 
+    data-[state=active]:from-[#cadfe7] 
+    data-[state=active]:to-[#d9ebe8]
+    data-[state=active]:before:absolute
+    data-[state=active]:before:inset-0
+    data-[state=active]:before:rounded-md
+    data-[state=active]:before:bg-gradient-to-t
+    data-[state=active]:before:from-[#cadfe7]
+    data-[state=active]:before:to-transparent
+    data-[state=active]:before:opacity-40
+    data-[state=active]:before:content-['']"
+            >
+              Products
+            </TabsTrigger>
+
+            {/* Services Tab */}
+            <TabsTrigger
+              value="services"
+              className="relative w-full cursor-pointer text-[#165940] bg-white text-lg 
+    rounded-md font-medium py-6 transition
+    data-[state=active]:text-[#165940] 
+    data-[state=active]:shadow
+    data-[state=active]:bg-gradient-to-b 
+    data-[state=active]:from-[#cadfe7] 
+    data-[state=active]:to-[#d9ebe8]
+    data-[state=active]:before:absolute
+    data-[state=active]:before:inset-0
+    data-[state=active]:before:rounded-md
+    data-[state=active]:before:bg-gradient-to-t
+    data-[state=active]:before:from-[#cadfe7]
+    data-[state=active]:before:to-transparent
+    data-[state=active]:before:opacity-40
+    data-[state=active]:before:content-['']"
+            >
+              Services
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Content Panels */}
+          <TabsContent value="products" className="mt-2">
+            <Products vendorId={vendorId} />
+          </TabsContent>
+
+          <TabsContent value="services" className="mt-2">
+            <Services vendorId={vendorId} />
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 };

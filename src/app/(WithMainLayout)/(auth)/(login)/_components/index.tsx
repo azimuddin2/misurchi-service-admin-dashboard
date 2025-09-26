@@ -27,6 +27,7 @@ import { toast } from 'sonner';
 import { AppButton } from '@/components/shared/app-button';
 import logo from '@/assets/images/logo.png';
 import Image from 'next/image';
+import Cookies from 'js-cookie';
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -57,17 +58,24 @@ const LoginForm = () => {
         return;
       }
 
+      // Decode/verify token
       const user = verifyToken(accessToken) as TUser;
       if (!user) {
         toast.error('Invalid access token.');
         return;
       }
 
+      // Update Redux state
       dispatch(setUser({ user, token: accessToken }));
+
+      // ✅ Persist token in cookie for client-side access
+      Cookies.set('accessToken', accessToken, { expires: 1, sameSite: 'lax' });
+
       toast.success(response.message || 'Login successful');
       form.reset();
 
-      router.push(redirect || '/admin/dashboard');
+      // Redirect to intended page or home
+      router.push(redirect ? decodeURIComponent(redirect) : '/admin/dashboard');
     } catch (error: any) {
       const message =
         error?.data?.message ||

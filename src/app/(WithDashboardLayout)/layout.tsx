@@ -1,7 +1,6 @@
 'use client';
 
 import { AppSidebar } from '@/components/layout/sidebar/app-sidebar';
-import ProtectedRoute from '@/components/protected-route';
 import {
   SidebarInset,
   SidebarProvider,
@@ -20,6 +19,7 @@ import Link from 'next/link';
 import { Bell, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const user = useAppSelector(selectCurrentUser);
@@ -28,7 +28,12 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
 
   const handleLogout = () => {
+    // 1. Clear redux user state
     dispatch(logout());
+
+    // 2. Remove cookie from client
+    Cookies.remove('accessToken');
+
     router.push('/');
   };
 
@@ -89,11 +94,9 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
               </DropdownMenu>
             </div>
           </header>
-          <ProtectedRoute>
-            <div className="min-h-[100vh] bg-[#f6f6f6] flex-1 rounded md:min-h-min p-3 lg:p-8 lg:m-2 mt-0">
-              {children}
-            </div>
-          </ProtectedRoute>
+          <div className="min-h-[100vh] bg-[#f6f6f6] flex-1 rounded md:min-h-min p-3 lg:p-8 lg:m-2 mt-0">
+            {children}
+          </div>
         </SidebarInset>
       </SidebarProvider>
     </div>

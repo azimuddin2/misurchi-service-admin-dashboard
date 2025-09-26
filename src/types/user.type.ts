@@ -28,3 +28,25 @@ export interface IUser {
   updatedAt: string;
   __v: number;
 }
+
+export type TVendorUser = {
+  _id: string;
+  userId: IUser;
+  businessName: string;
+  email: string;
+  phone: string;
+  country: string;
+  street: string;
+  state: string;
+  zipCode: string;
+  currency: string;
+  timeZone: string;
+  workHours: string;
+  firstName: string;
+  lastName: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  image?: string;
+};
