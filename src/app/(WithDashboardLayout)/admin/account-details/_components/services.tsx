@@ -21,12 +21,14 @@ import { useGetAllProductsByUserQuery } from '@/redux/features/product/productAp
 import Spinner from '@/components/shared/Spinner';
 import { ADTable } from '@/components/modules/ADTable';
 import ADPagination from '@/components/modules/ADPagination';
+import { useGetAllServicesByUserQuery } from '@/redux/features/service/serviceApi';
+import { TService } from '@/types/service.type';
 
 type Props = {
   vendorId: string;
 };
 
-const Products = ({ vendorId }: Props) => {
+const Services = ({ vendorId }: Props) => {
   const user = useAppSelector(selectCurrentUser);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -49,7 +51,7 @@ const Products = ({ vendorId }: Props) => {
   const searchTerm = searchParams.get('searchTerm') || '';
   const createdAt = searchParams.get('createdAt') || '';
 
-  const { data, isLoading, refetch } = useGetAllProductsByUserQuery({
+  const { data, isLoading, refetch } = useGetAllServicesByUserQuery({
     vendorId,
     page,
     limit,
@@ -101,7 +103,7 @@ const Products = ({ vendorId }: Props) => {
     }
   }, [searchParams]);
 
-  const columns: ColumnDef<TProduct>[] = [
+  const columns: ColumnDef<TService>[] = [
     {
       id: 'select',
       header: ({ table }) => (
@@ -131,7 +133,7 @@ const Products = ({ vendorId }: Props) => {
     },
     {
       accessorKey: 'name',
-      header: 'Product Name',
+      header: 'Service Name',
       cell: ({ row }) => {
         const { images, name } = row.original;
         const imageUrl = images?.[0]?.url || '/placeholder.png';
@@ -153,12 +155,17 @@ const Products = ({ vendorId }: Props) => {
     {
       accessorKey: 'price',
       header: 'Price',
-      cell: ({ row }) => <span>${row.original.price.toFixed(2)}</span>,
+      cell: ({ row }) => {
+        const firstService = row.original.savedServices?.[0]; // first service
+        return firstService ? `$${Number(firstService.price).toFixed(2)}` : '-';
+      },
     },
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }) => <span>{row.original.status}</span>,
+      cell: ({ row }) => (
+        <span className="capitalize">{row.original.status}</span>
+      ),
     },
     {
       accessorKey: 'createdAt',
@@ -199,7 +206,7 @@ const Products = ({ vendorId }: Props) => {
   return (
     <div>
       {/* Search + Date Filter Section */}
-      <div className="flex flex-col lg:justify-between lg:flex-row gap-4 mt-5">
+      <div className="flex flex-col lg:justify-between lg:flex-row gap-4 my-6">
         <div className="relative w-full lg:w-3/5">
           <Input
             type="text"
@@ -229,11 +236,6 @@ const Products = ({ vendorId }: Props) => {
         />
       </div>
 
-      {/* Header */}
-      <div className="flex justify-between items-center mt-5 mb-2">
-        {/* <h2 className="text-xl font-medium">Products</h2> */}
-      </div>
-
       {/* Table & Pagination */}
       <ADTable columns={columns} data={products || []} />
       <ADPagination totalPage={meta?.totalPage} />
@@ -241,4 +243,4 @@ const Products = ({ vendorId }: Props) => {
   );
 };
 
-export default Products;
+export default Services;

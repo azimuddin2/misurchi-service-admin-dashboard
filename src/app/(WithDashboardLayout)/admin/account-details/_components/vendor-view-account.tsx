@@ -14,7 +14,7 @@ type Props = {
   email: string;
 };
 
-const ViewAccount = ({ email }: Props) => {
+const VendorViewAccount = ({ email }: Props) => {
   const { data } = useGetUserProfileQuery(email);
   const user: IUser | undefined = data?.data;
 
@@ -180,4 +180,4 @@ const ViewAccount = ({ email }: Props) => {
   );
 };
 
-export default ViewAccount;
+export default VendorViewAccount;

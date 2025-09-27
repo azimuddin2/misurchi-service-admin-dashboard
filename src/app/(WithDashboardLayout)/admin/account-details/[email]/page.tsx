@@ -1,9 +1,9 @@
-import ViewAccount from '../_components/view-account';
+import VendorViewAccount from '../_components/vendor-view-account';
 
 const ViewAccountPage = ({ params }: { params: { email: string } }) => {
   return (
     <div>
-      <ViewAccount email={params.email} />
+      <VendorViewAccount email={params.email} />
     </div>
   );
 };

@@ -40,7 +40,24 @@ const userApi = baseApi.injectEndpoints({
       }),
       providesTags: ['User'],
     }),
+
+    changeUserStatus: builder.mutation<
+      TResponse<IUser>,
+      { id: string; status: { status: string } }
+    >({
+      query: ({ id, status }) => ({
+        url: `/users/change-status/${id}`,
+        method: 'PUT',
+        body: status,
+        credentials: 'include',
+      }),
+      invalidatesTags: ['User'],
+    }),
   }),
 });
 
-export const { useGetAllUsersQuery, useGetUserProfileQuery } = userApi;
+export const {
+  useGetAllUsersQuery,
+  useGetUserProfileQuery,
+  useChangeUserStatusMutation,
+} = userApi;

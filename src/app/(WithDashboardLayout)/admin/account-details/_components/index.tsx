@@ -7,7 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { Eye, Search, ShieldBan } from 'lucide-react';
+import { Eye, Search, ShieldBan, ShieldCheck } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { format, parseISO } from 'date-fns';
 import { IUser } from '@/types';
@@ -16,10 +16,22 @@ import { useCallback, useEffect, useState } from 'react';
 import ADPagination from '@/components/modules/ADPagination';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
-import { useGetAllUsersQuery } from '@/redux/features/user/userApi';
+import {
+  useChangeUserStatusMutation,
+  useGetAllUsersQuery,
+} from '@/redux/features/user/userApi';
+import Spinner from '@/components/shared/Spinner';
+import UserViewModal from './user-view-modal';
+import BlockUserModal from './block-user-modal';
+import { toast } from 'sonner';
 
 const AccountDetails = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [blockModalUser, setBlockModalUser] = useState<IUser | null>(null);
+  const [isBlockModalOpen, setIsBlockModalOpen] = useState(false);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -89,6 +101,34 @@ const AccountDetails = () => {
     }
   }, [searchParams]);
 
+  const [changeUserStatus] = useChangeUserStatusMutation();
+
+  const handleBlockConfirm = async (user: IUser) => {
+    try {
+      if (user.status === 'blocked') {
+        // Unblock user → set to ongoing
+        await changeUserStatus({
+          id: user._id,
+          status: { status: 'ongoing' }, // ✅ wrapped
+        }).unwrap();
+
+        toast.success('User unblocked successfully');
+        refetch();
+      } else if (user.status === 'ongoing') {
+        // Block user → set to blocked
+        await changeUserStatus({
+          id: user._id,
+          status: { status: 'blocked' }, // ✅ wrapped
+        }).unwrap();
+
+        toast.success('User blocked successfully');
+        refetch();
+      }
+    } catch (error) {
+      toast.error('Failed to update user status');
+    }
+  };
+
   // Table columns
   const columns: ColumnDef<IUser>[] = [
     {
@@ -145,6 +185,13 @@ const AccountDetails = () => {
       ),
     },
     {
+      accessorKey: 'status',
+      header: 'Status',
+      cell: ({ row }) => (
+        <span className="capitalize">{row.original.status}</span>
+      ),
+    },
+    {
       accessorKey: 'createdAt',
       header: 'Date & Time',
       cell: ({ row }) =>
@@ -155,35 +202,76 @@ const AccountDetails = () => {
       header: 'Action',
       cell: ({ row }) => (
         <div className="flex items-center space-x-3">
+          {row.original.role === 'vendor' ? (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Eye
+                    onClick={() =>
+                      router.push(
+                        `/admin/account-details/${row.original?.email}`,
+                      )
+                    }
+                    size={22}
+                    className="text-[#78C0A8] cursor-pointer hover:text-[#165940]"
+                  />
+                </TooltipTrigger>
+                <TooltipContent>View</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Eye
+                    onClick={() => {
+                      setSelectedUser(row.original);
+                      setIsModalOpen(true);
+                    }}
+                    size={22}
+                    className="text-[#78C0A8] cursor-pointer hover:text-[#165940]"
+                  />
+                </TooltipTrigger>
+                <TooltipContent>View</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
           <TooltipProvider>
             <Tooltip>
-              <TooltipTrigger>
-                <Eye
-                  onClick={() =>
-                    router.push(`/admin/account-details/${row.original?.email}`)
-                  }
-                  size={22}
-                  className="text-[#78C0A8] cursor-pointer hover:text-[#165940]"
-                />
+              <TooltipTrigger asChild>
+                {row.original.status === 'blocked' ? (
+                  <ShieldCheck
+                    size={22}
+                    onClick={() => {
+                      setBlockModalUser(row.original);
+                      setIsBlockModalOpen(true);
+                    }}
+                    className="text-green-600 cursor-pointer hover:text-green-800"
+                  />
+                ) : (
+                  <ShieldBan
+                    size={22}
+                    onClick={() => {
+                      setBlockModalUser(row.original);
+                      setIsBlockModalOpen(true);
+                    }}
+                    className="text-[#FE5858] cursor-pointer hover:text-red-600"
+                  />
+                )}
               </TooltipTrigger>
-              <TooltipContent>View</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <ShieldBan
-                  size={22}
-                  className="text-[#FE5858] cursor-pointer hover:text-red-600"
-                />
-              </TooltipTrigger>
-              <TooltipContent>Block</TooltipContent>
+              <TooltipContent>
+                {row.original.status === 'blocked' ? 'Unblock' : 'Block'}
+              </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
       ),
     },
   ];
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
     <div className="">
@@ -220,6 +308,20 @@ const AccountDetails = () => {
 
       <ADTable columns={columns} data={users || []} />
       <ADPagination totalPage={meta?.totalPage} />
+
+      {/* Single User Modal */}
+      <UserViewModal
+        selectedUser={selectedUser}
+        isOpen={isModalOpen}
+        onOpenChange={setIsModalOpen}
+      />
+
+      <BlockUserModal
+        user={blockModalUser}
+        isOpen={isBlockModalOpen}
+        onOpenChange={setIsBlockModalOpen}
+        onConfirm={handleBlockConfirm}
+      />
     </div>
   );
 };
