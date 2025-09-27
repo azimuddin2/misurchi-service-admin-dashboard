@@ -41,6 +41,19 @@ const userApi = baseApi.injectEndpoints({
       providesTags: ['User'],
     }),
 
+    updateUserProfile: builder.mutation<
+      TResponse<IUser>,
+      { email: string; body: FormData }
+    >({
+      query: ({ email, body }) => ({
+        url: `/users/profile/${email}`,
+        method: 'PATCH',
+        body,
+        credentials: 'include',
+      }),
+      invalidatesTags: ['User'],
+    }),
+
     changeUserStatus: builder.mutation<
       TResponse<IUser>,
       { id: string; status: { status: string } }
@@ -60,4 +73,5 @@ export const {
   useGetAllUsersQuery,
   useGetUserProfileQuery,
   useChangeUserStatusMutation,
+  useUpdateUserProfileMutation,
 } = userApi;

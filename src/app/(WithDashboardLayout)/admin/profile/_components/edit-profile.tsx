@@ -11,28 +11,64 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { AppButton } from '@/components/shared/app-button';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
 import { PhoneInput } from '@/components/shared/phone-input';
+import { IUser } from '@/types';
+import { Dispatch, SetStateAction, useEffect } from 'react';
+import { useUpdateUserProfileMutation } from '@/redux/features/user/userApi';
 
-const EditProfile = () => {
+type Props = {
+  userData: IUser | undefined;
+  imageFile: File;
+};
+
+const EditProfile = ({ userData, imageFile }: Props) => {
   const form = useForm({
-    // resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+    },
   });
+
+  // Reset form values when vendorUser is available
+  useEffect(() => {
+    if (userData) {
+      form.reset({
+        firstName: userData.firstName || '',
+        lastName: userData.lastName || '',
+        email: userData.email || '',
+        phone: userData.phone || '',
+      });
+    }
+  }, [userData, form]);
 
   const {
     formState: { isSubmitting },
   } = form;
 
-  const router = useRouter();
+  const [updateUserProfile] = useUpdateUserProfileMutation();
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    const formData = new FormData();
+    formData.append('data', JSON.stringify(data)); //✅Backend expects JSON string
+
+    formData.append('profile', imageFile); //✅Append multiple images
+
+    const toastId = toast.loading('Updateing Profile...');
     try {
+      const res = await updateUserProfile({
+        email: email,
+        body: formData,
+      }).unwrap();
+      toast.success(res.message || 'Profile update successfully');
+      refetch();
     } catch (error: any) {
-      const message = error?.data?.message || error?.message;
-      toast.error(message);
+      toast.error(error?.data?.message || 'Failed to update profile');
+    } finally {
+      toast.dismiss(toastId);
     }
   };
 
@@ -43,28 +79,53 @@ const EditProfile = () => {
       </h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          {/* Business Name */}
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem className="mb-5">
-                <FormLabel className="!text-gray-700 !text-base font-medium">
-                  Name
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    type="text"
-                    placeholder="Enter your name"
-                    {...field}
-                    value={field.value || ''}
-                    className="bg-[#f5f5f5] py-6 border-none rounded-sm"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-5">
+            {/* First Name */}
+            <FormField
+              control={form.control}
+              name="firstName"
+              render={({ field }) => (
+                <FormItem className="lg:mb-0 mb-5">
+                  <FormLabel className="!text-gray-700 !text-base font-medium">
+                    First Name
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="First Name"
+                      {...field}
+                      value={field.value || ''}
+                      className="bg-[#f5f5f5] py-6 border-none rounded-sm"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Last Name  */}
+            <FormField
+              control={form.control}
+              name="lastName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="!text-gray-700 !text-base font-medium">
+                    Last Name
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="Last Name"
+                      {...field}
+                      value={field.value || ''}
+                      className="bg-[#f5f5f5] py-6 border-none rounded-sm"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
           {/* Email */}
           <FormField
@@ -78,6 +139,7 @@ const EditProfile = () => {
                 <FormControl>
                   <Input
                     type="email"
+                    disabled
                     placeholder="Enter email address"
                     {...field}
                     value={field.value || ''}
