@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import EditProfile from './edit-profile';
 import ChangePassword from './change-password';
@@ -11,6 +10,7 @@ import { useGetUserProfileQuery } from '@/redux/features/user/userApi';
 import { IUser } from '@/types';
 import ImageUploader from '@/components/modules/ImageUploader';
 import ImagePreviewer from '@/components/modules/ImageUploader/ImagePreviewer';
+import Spinner from '@/components/shared/Spinner';
 
 const Profile = () => {
   const user = useAppSelector(selectCurrentUser);
@@ -26,8 +26,12 @@ const Profile = () => {
     userData?.image || '',
   );
 
+  if (isLoading) {
+    return <Spinner />;
+  }
+
   return (
-    <div className="bg-white">
+    <div className="bg-white pb-10">
       {/* ----- Profile Picture Section ----- */}
       <div className="w-full bg-sc-primary flex items-center justify-center gap-6 py-12 bg-gradient-to-t to-green-800 from-green-500/70">
         {/* Profile Image */}
@@ -51,7 +55,9 @@ const Profile = () => {
 
         {/* User Info */}
         <div className="text-white">
-          <h2 className="text-2xl font-semibold">{userData?.fullName}</h2>
+          <h2 className="text-2xl font-semibold">
+            {userData?.firstName} {userData?.lastName}
+          </h2>
           <p className="text-base">{userData?.role}</p>
         </div>
       </div>
@@ -84,7 +90,11 @@ const Profile = () => {
           </div>
 
           <TabsContent value="editProfile">
-            <EditProfile userData={userData} imageFile={imageFile} />
+            <EditProfile
+              userData={userData}
+              imageFile={imageFile}
+              refetch={refetch}
+            />
           </TabsContent>
 
           <TabsContent value="changePass">

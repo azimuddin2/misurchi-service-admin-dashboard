@@ -15,16 +15,22 @@ import { AppButton } from '@/components/shared/app-button';
 import { toast } from 'sonner';
 import { PhoneInput } from '@/components/shared/phone-input';
 import { IUser } from '@/types';
-import { Dispatch, SetStateAction, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useUpdateUserProfileMutation } from '@/redux/features/user/userApi';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { updateProfileSchema } from './profile.validation';
 
 type Props = {
   userData: IUser | undefined;
-  imageFile: File;
+  imageFile: File | null;
+  refetch: () => void;
 };
 
-const EditProfile = ({ userData, imageFile }: Props) => {
+const EditProfile = ({ userData, imageFile, refetch }: Props) => {
+  const [updateUserProfile] = useUpdateUserProfileMutation();
+
   const form = useForm({
+    resolver: zodResolver(updateProfileSchema),
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -33,7 +39,7 @@ const EditProfile = ({ userData, imageFile }: Props) => {
     },
   });
 
-  // Reset form values when vendorUser is available
+  // Reset form values when userData is available
   useEffect(() => {
     if (userData) {
       form.reset({
@@ -49,22 +55,24 @@ const EditProfile = ({ userData, imageFile }: Props) => {
     formState: { isSubmitting },
   } = form;
 
-  const [updateUserProfile] = useUpdateUserProfileMutation();
-
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    if (!userData) return;
+
     const formData = new FormData();
-    formData.append('data', JSON.stringify(data)); //✅Backend expects JSON string
+    formData.append('data', JSON.stringify(data));
 
-    formData.append('profile', imageFile); //✅Append multiple images
+    if (imageFile) formData.append('profile', imageFile); // direct use props
 
-    const toastId = toast.loading('Updateing Profile...');
+    const toastId = toast.loading('Updating Profile...');
+
     try {
       const res = await updateUserProfile({
-        email: email,
+        email: userData.email,
         body: formData,
       }).unwrap();
-      toast.success(res.message || 'Profile update successfully');
-      refetch();
+
+      toast.success(res.message || 'Profile updated successfully');
+      refetch(); // optional
     } catch (error: any) {
       toast.error(error?.data?.message || 'Failed to update profile');
     } finally {
@@ -73,12 +81,10 @@ const EditProfile = ({ userData, imageFile }: Props) => {
   };
 
   return (
-    <div className="font-sora max-w-4xl mx-auto pb-20">
-      <h2 className=" text-center text-2xl font-medium py-2">
-        Edit Your Profile
-      </h2>
+    <div className="font-sora max-w-4xl mx-auto p-5">
+      <h2 className=" text-center text-2xl font-medium">Edit Your Profile</h2>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-5">
             {/* First Name */}
             <FormField
@@ -176,11 +182,12 @@ const EditProfile = ({ userData, imageFile }: Props) => {
 
           {/* Submit Button */}
           <AppButton
+            type="submit"
             className="w-full text-gray-50 border-gray-800 bg-gradient-to-t to-green-800 from-green-500/70 hover:bg-green-500/80"
             content={
               <div className="flex justify-center items-center space-x-2 font-semibold">
                 <p className="uppercase">
-                  {isSubmitting ? 'Signing Up...' : 'Sign Up'}
+                  {isSubmitting ? 'Saving...' : 'Save Change'}
                 </p>
                 <ArrowRight />
               </div>

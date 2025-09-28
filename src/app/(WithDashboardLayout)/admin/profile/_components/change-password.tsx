@@ -15,56 +15,58 @@ import {
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AppButton } from '@/components/shared/app-button';
-import { useResetPasswordMutation } from '@/redux/features/auth/authApi';
-import { IUser, TResponse } from '@/types';
+import { useChangePasswordMutation } from '@/redux/features/auth/authApi';
+import { TResponse } from '@/types';
 import { toast } from 'sonner';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { changePasswordSchema } from './profile.validation';
+import { TChangePassword } from '@/types/auth.type';
 
 const ChangePassword = () => {
+  const [currentPassword, setCurrentPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
   const form = useForm({
-    // resolver: zodResolver(resetPasswordSchema),
+    resolver: zodResolver(changePasswordSchema),
   });
 
   const {
     formState: { isSubmitting },
   } = form;
 
-  const searchParams = useSearchParams();
-  const redirect = searchParams.get('redirectPath');
-  const router = useRouter();
-
-  const [resetPassword] = useResetPasswordMutation();
+  const [changePassword] = useChangePasswordMutation();
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    const toastId = toast.loading('Update Password...');
+
     try {
-      const res = (await resetPassword(data)) as TResponse<IUser | any>;
+      const res = (await changePassword(data)) as TResponse<
+        TChangePassword | any
+      >;
 
       if (res.error) {
         toast.error(res?.error?.data?.message);
       } else {
         toast.success(res?.data?.message);
-        router.push(redirect || '/');
+        form.reset();
       }
     } catch (error: any) {
       const message = error?.data?.message || error?.message;
       toast.error(message);
+    } finally {
+      toast.dismiss(toastId);
     }
   };
 
   return (
-    <div className="font-sora max-w-4xl mx-auto pb-20">
-      <h2 className=" text-center text-2xl font-medium py-2">
-        Change Password
-      </h2>
+    <div className="font-sora max-w-4xl mx-auto p-5">
+      <h2 className=" text-center text-2xl font-medium">Change Password</h2>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          {/* New Password */}
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-6">
+          {/* Old Password */}
           <FormField
             control={form.control}
-            name="newPassword"
+            name="oldPassword"
             render={({ field }) => (
               <FormItem className="relative mb-5">
                 <FormLabel className="!text-gray-700 !text-base font-medium">
@@ -72,8 +74,8 @@ const ChangePassword = () => {
                 </FormLabel>
                 <FormControl>
                   <Input
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Enter your new password"
+                    type={currentPassword ? 'text' : 'password'}
+                    placeholder="Enter your current password"
                     {...field}
                     value={field.value || ''}
                     className="bg-[#f5f5f5] py-6 border-none rounded-sm"
@@ -84,9 +86,9 @@ const ChangePassword = () => {
                   variant="ghost"
                   size="icon"
                   className="absolute right-2 top-8"
-                  onClick={() => setShowPassword((prev) => !prev)}
+                  onClick={() => setCurrentPassword((prev) => !prev)}
                 >
-                  {showPassword ? (
+                  {currentPassword ? (
                     <EyeOff className="w-6 h-6" />
                   ) : (
                     <Eye className="w-6 h-6" />
@@ -133,14 +135,14 @@ const ChangePassword = () => {
             )}
           />
 
-          {/* Confirm Password */}
+          {/* Confirm New Password */}
           <FormField
             control={form.control}
             name="confirmPassword"
             render={({ field }) => (
               <FormItem className="relative mb-5">
                 <FormLabel className="!text-gray-700 !text-base font-medium">
-                  Confirm Password
+                  Confirm New Password
                 </FormLabel>
                 <FormControl>
                   <Input
