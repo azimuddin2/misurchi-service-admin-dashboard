@@ -14,6 +14,8 @@ import {
   DollarSign,
   Star,
   Headset,
+  ListTodo,
+  LayoutList,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -50,6 +52,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: 'Account Details',
         url: `/admin/account-details`,
         icon: UserRound,
+      },
+      {
+        title: 'Service Type',
+        url: `/admin/service-type`,
+        icon: ListTodo,
+      },
+      {
+        title: 'Product Type',
+        url: `/admin/product-type`,
+        icon: ListTodo,
       },
       {
         title: 'Earning',

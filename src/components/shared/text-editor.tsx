@@ -14,7 +14,6 @@ import {
   AlignCenter,
   AlignRight,
   AlignJustify,
-  ImageIcon,
 } from 'lucide-react';
 import {
   Select,
@@ -74,30 +73,30 @@ export const TextEditor = ({
     setIsEmpty((editorRef.current?.innerText || '').trim() === '');
   };
 
-  const handleImageInsert = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    setValue?: (v: string) => void,
-  ) => {
-    const file = e.target.files?.[0];
-    if (!file || !file.type.startsWith('image/')) return;
+  // const handleImageInsert = (
+  //   e: React.ChangeEvent<HTMLInputElement>,
+  //   setValue?: (v: string) => void,
+  // ) => {
+  //   const file = e.target.files?.[0];
+  //   if (!file || !file.type.startsWith('image/')) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = document.createElement('img');
-      img.src = event.target?.result as string;
-      img.alt = file.name;
-      img.style.maxWidth = '100%';
-      img.style.margin = '8px 0';
+  //   const reader = new FileReader();
+  //   reader.onload = (event) => {
+  //     const img = document.createElement('img');
+  //     img.src = event.target?.result as string;
+  //     img.alt = file.name;
+  //     img.style.maxWidth = '100%';
+  //     img.style.margin = '8px 0';
 
-      const range = window.getSelection()?.getRangeAt(0);
-      range ? range.insertNode(img) : editorRef.current?.appendChild(img);
-      editorRef.current?.focus();
-      setIsEmpty(false);
-      updateFormContent(setValue);
-    };
-    reader.readAsDataURL(file);
-    e.target.value = '';
-  };
+  //     const range = window.getSelection()?.getRangeAt(0);
+  //     range ? range.insertNode(img) : editorRef.current?.appendChild(img);
+  //     editorRef.current?.focus();
+  //     setIsEmpty(false);
+  //     updateFormContent(setValue);
+  //   };
+  //   reader.readAsDataURL(file);
+  //   e.target.value = '';
+  // };
 
   return (
     <FormField
@@ -121,14 +120,14 @@ export const TextEditor = ({
               <div className="bg-white rounded-lg border">
                 {/* Toolbar */}
                 <div className="lg:px-3 py-2 border-b flex items-center gap-1 flex-wrap justify-end">
-                  <input
+                  {/* <input
                     type="file"
                     accept="image/*"
                     ref={fileInputRef}
                     onChange={(e) => handleImageInsert(e, field.onChange)}
                     className="hidden"
-                  />
-                  <TooltipProvider>
+                  /> */}
+                  {/* <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
@@ -146,7 +145,7 @@ export const TextEditor = ({
                       </TooltipTrigger>
                       <TooltipContent>Insert Image</TooltipContent>
                     </Tooltip>
-                  </TooltipProvider>
+                  </TooltipProvider> */}
 
                   {/* Font Size */}
                   <Select
@@ -158,10 +157,11 @@ export const TextEditor = ({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="1">10</SelectItem>
-                      <SelectItem value="2">13</SelectItem>
-                      <SelectItem value="3">16</SelectItem>
-                      <SelectItem value="4">18</SelectItem>
-                      <SelectItem value="5">24</SelectItem>
+                      <SelectItem value="2">12</SelectItem>
+                      <SelectItem value="3">14</SelectItem>
+                      <SelectItem value="4">16</SelectItem>
+                      <SelectItem value="5">18</SelectItem>
+                      <SelectItem value="6">24</SelectItem>
                     </SelectContent>
                   </Select>
 

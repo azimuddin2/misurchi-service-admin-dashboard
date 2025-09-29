@@ -73,3 +73,12 @@ export type TServiceSlots = {
   finalPrice: string;
   slots: TSlot[];
 };
+
+export type TServiceType = {
+  _id: string;
+  name: string;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+};

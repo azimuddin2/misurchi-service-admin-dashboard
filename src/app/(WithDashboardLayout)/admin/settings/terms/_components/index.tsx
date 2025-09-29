@@ -79,7 +79,6 @@ export default function TermsForm() {
 
           {/* Submit Button */}
           <AppButton
-            type="submit"
             disabled={isSubmitting}
             className="w-full text-gray-50 border-gray-800 bg-gradient-to-t to-green-800 from-green-500/70 hover:bg-green-500/80 m-0"
             content={
