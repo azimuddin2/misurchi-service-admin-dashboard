@@ -19,14 +19,17 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { useAddProductTypeMutation } from '@/redux/features/productType/productTypeApi';
+import { useUpdateProductTypeMutation } from '@/redux/features/productType/productTypeApi';
 import { AppButton } from '@/components/shared/app-button';
 import { ArrowRight } from 'lucide-react';
+import { useEffect } from 'react';
+import { TProductType } from '@/types/product.type';
 
 interface AddProductTypeModalProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   refetch?: () => void;
+  productTypeData: TProductType | null;
 }
 
 // ✅ Validation schema
@@ -37,12 +40,13 @@ const productTypeSchema = z.object({
 
 type FormValues = z.infer<typeof productTypeSchema>;
 
-const AddProductTypeModal = ({
+const UpdateProductTypeModal = ({
   isOpen,
   onOpenChange,
   refetch,
+  productTypeData,
 }: AddProductTypeModalProps) => {
-  const [addProductType] = useAddProductTypeMutation();
+  const [updateProductType] = useUpdateProductTypeMutation();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(productTypeSchema),
@@ -55,16 +59,26 @@ const AddProductTypeModal = ({
     formState: { isSubmitting },
   } = form;
 
+  // preload form when data changes
+  useEffect(() => {
+    if (productTypeData) {
+      form.reset({ name: productTypeData.name });
+    }
+  }, [productTypeData, form]);
+
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    const toastId = toast.loading('Adding product type...');
+    const toastId = toast.loading('Updating product type...');
     try {
-      const res = await addProductType(data).unwrap();
-      toast.success(res.message || 'Product type added successfully');
+      const res = await updateProductType({
+        id: productTypeData?._id as string,
+        data,
+      }).unwrap();
+      toast.success(res.message || 'Product type updated successfully');
       form.reset();
       onOpenChange(false);
       refetch?.();
     } catch (error: any) {
-      toast.error(error?.data?.message || 'Failed to add product type');
+      toast.error(error?.data?.message || 'Failed to update product type');
     } finally {
       toast.dismiss(toastId);
     }
@@ -75,7 +89,7 @@ const AddProductTypeModal = ({
       <DialogContent className="sm:max-w-lg rounded-lg">
         <DialogHeader>
           <DialogTitle className="text-center font-medium text-xl">
-            Add Product Type
+            Update Product Type
           </DialogTitle>
         </DialogHeader>
 
@@ -89,17 +103,14 @@ const AddProductTypeModal = ({
               control={form.control}
               name="name"
               render={({ field }) => (
-                <FormItem className="lg:mb-0 mb-5">
-                  <FormLabel className="!text-gray-700 !text-base font-medium">
-                    Product Type Name
-                  </FormLabel>
+                <FormItem>
+                  <FormLabel>Product Type Name</FormLabel>
                   <FormControl>
                     <Input
-                      type="text"
+                      className="bg-[#f5f5f5] py-6 border-none rounded-sm"
                       placeholder="Enter product type name"
                       {...field}
                       value={field.value || ''}
-                      className="bg-[#f5f5f5] py-6 border-none rounded-sm"
                     />
                   </FormControl>
                   <FormMessage />
@@ -107,16 +118,30 @@ const AddProductTypeModal = ({
               )}
             />
 
-            {/* Submit Button */}
-            <AppButton
-              className="w-full text-gray-50 text-base p-5 border-gray-800 bg-gradient-to-t to-green-800 from-green-500/70 hover:bg-green-500/80 mt-5"
-              content={
-                <div className="flex justify-center items-center space-x-2 uppercase">
-                  <p>{isSubmitting ? 'Saving...' : 'Save'}</p>
-                  <ArrowRight />
-                </div>
-              }
-            />
+            <div className="flex justify-between items-center gap-2">
+              {/* Submit Button */}
+              <AppButton
+                className="w-1/2 mt-2 text-gray-50 text-base p-5 border-gray-800 bg-gradient-to-t to-green-800 from-green-500/70 hover:bg-green-500/80"
+                content={
+                  <div className="flex justify-center items-center space-x-2 uppercase">
+                    <p>{isSubmitting ? 'Updating...' : 'Update'}</p>
+                    <ArrowRight />
+                  </div>
+                }
+              />
+              {/* Cancel Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  form.reset();
+                  onOpenChange(false);
+                }}
+                className="w-1/2 uppercase flex items-center justify-center text-black p-2 border-gray-800 bg-gradient-to-t to-[#FFFFFF] from-[#FFFFFF] hover:bg-green-500/80 cursor-pointer text-base mt-2 shadow-sm rounded-sm border-b-4 border-r-4 shadow-gray-500"
+              >
+                <p className="mr-1">Cancel</p>
+                <ArrowRight size={16} />
+              </button>
+            </div>
           </form>
         </Form>
       </DialogContent>
@@ -124,4 +149,4 @@ const AddProductTypeModal = ({
   );
 };
 
-export default AddProductTypeModal;
+export default UpdateProductTypeModal;

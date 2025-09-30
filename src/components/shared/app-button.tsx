@@ -7,11 +7,7 @@ interface IAppButton {
   disabled?: boolean;
 }
 
-export const AppButton = ({
-  className,
-  content,
-  disabled,
-}: IAppButton) => {
+export const AppButton = ({ className, content, disabled }: IAppButton) => {
   return (
     <Button
       disabled={disabled}
