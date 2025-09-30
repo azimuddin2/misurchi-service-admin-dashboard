@@ -204,15 +204,6 @@ const LoginForm = () => {
                 </div>
               }
             />
-            <p className="text-center text-base mt-2">
-              Don’t have an account?{' '}
-              <Link
-                href="/user-role"
-                className="text-black font-bold underline"
-              >
-                SIGN UP HERE
-              </Link>
-            </p>
           </form>
         </Form>
       </div>

@@ -15,7 +15,7 @@ const ManageSubscription = () => {
         className="w-full text-black border-gray-800 bg-gradient-to-t to-[#FFFFFF] from-[#FFFFFF] hover:bg-green-500/80"
         content={
           <Link
-            href={`/`}
+            href={`/admin/manage-subscription/add-subscription`}
             className="flex justify-center items-center space-x-1 font-semibold"
           >
             <PlusCircle size={24} />
