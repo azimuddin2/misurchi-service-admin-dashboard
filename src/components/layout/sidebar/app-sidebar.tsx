@@ -61,7 +61,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {
         title: 'Product Type',
         url: `/admin/product-type`,
-        icon: ListTodo,
+        icon: LayoutList,
       },
       {
         title: 'Earning',

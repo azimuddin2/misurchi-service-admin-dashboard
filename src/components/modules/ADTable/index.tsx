@@ -37,7 +37,7 @@ export function ADTable<TData, TValue>({
       <Table className="w-full">
         <TableHeader className="bg-[#165940] hover:bg-[#165940]">
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className="h-14">
+            <TableRow key={headerGroup.id} className="h-14 hover:bg-[#165940]">
               {headerGroup.headers.map((header) => {
                 return (
                   <TableHead

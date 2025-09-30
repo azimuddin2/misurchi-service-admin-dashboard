@@ -60,12 +60,12 @@ const serviceTypeApi = baseApi.injectEndpoints({
 
     updateServiceType: builder.mutation<
       TResponse<TServiceType>,
-      { id: string; body: Partial<TServiceType> }
+      { id: string; data: Partial<TServiceType> }
     >({
-      query: ({ id, body }) => ({
+      query: ({ id, data }) => ({
         url: `/service-type/${id}`,
         method: 'PATCH',
-        body,
+        body: data,
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',

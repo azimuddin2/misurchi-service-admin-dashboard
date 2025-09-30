@@ -10,8 +10,6 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Edit, PlusCircle, Search, Trash2 } from 'lucide-react';
-import { useAppSelector } from '@/redux/hooks';
-import { selectCurrentUser } from '@/redux/features/auth/authSlice';
 import { format, parseISO } from 'date-fns';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
@@ -29,7 +27,6 @@ import DeleteConfirmationModal from '@/components/shared/delete-confirmation-mod
 import UpdateProductTypeModal from './update-product-type-modal';
 
 const ProductType = () => {
-  const user = useAppSelector(selectCurrentUser);
   const router = useRouter();
   const searchParams = useSearchParams();
 

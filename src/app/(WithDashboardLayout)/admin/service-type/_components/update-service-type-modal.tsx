@@ -19,37 +19,37 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { useUpdateProductTypeMutation } from '@/redux/features/productType/productTypeApi';
 import { AppButton } from '@/components/shared/app-button';
 import { ArrowRight } from 'lucide-react';
 import { useEffect } from 'react';
-import { TProductType } from '@/types/product.type';
+import { TServiceType } from '@/types/service.type';
+import { useUpdateServiceTypeMutation } from '@/redux/features/serviceType/serviceTypeApi';
 
-interface AddProductTypeModalProps {
+interface AddServiceTypeModalProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   refetch?: () => void;
-  productTypeData: TProductType | null;
+  serviceTypeData: TServiceType | null;
 }
 
 // ✅ Validation schema
-const productTypeSchema = z.object({
-  name: z.string().min(1, 'Product type name is required'),
+const serviceTypeSchema = z.object({
+  name: z.string().min(1, 'Service type name is required'),
   description: z.string().optional(),
 });
 
-type FormValues = z.infer<typeof productTypeSchema>;
+type FormValues = z.infer<typeof serviceTypeSchema>;
 
-const UpdateProductTypeModal = ({
+const UpdateServiceTypeModal = ({
   isOpen,
   onOpenChange,
   refetch,
-  productTypeData,
-}: AddProductTypeModalProps) => {
-  const [updateProductType] = useUpdateProductTypeMutation();
+  serviceTypeData,
+}: AddServiceTypeModalProps) => {
+  const [updateServiceType] = useUpdateServiceTypeMutation();
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(productTypeSchema),
+    resolver: zodResolver(serviceTypeSchema),
     defaultValues: {
       name: '',
     },
@@ -61,24 +61,24 @@ const UpdateProductTypeModal = ({
 
   // preload form when data changes
   useEffect(() => {
-    if (productTypeData) {
-      form.reset({ name: productTypeData.name });
+    if (serviceTypeData) {
+      form.reset({ name: serviceTypeData.name });
     }
-  }, [productTypeData, form]);
+  }, [serviceTypeData, form]);
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    const toastId = toast.loading('Updating product type...');
+    const toastId = toast.loading('Updating service type...');
     try {
-      const res = await updateProductType({
-        id: productTypeData?._id as string,
+      const res = await updateServiceType({
+        id: serviceTypeData?._id as string,
         data,
       }).unwrap();
-      toast.success(res.message || 'Product type updated successfully');
+      toast.success(res.message || 'Service type updated successfully');
       form.reset();
       onOpenChange(false);
       refetch?.();
     } catch (error: any) {
-      toast.error(error?.data?.message || 'Failed to update product type');
+      toast.error(error?.data?.message || 'Failed to update service type');
     } finally {
       toast.dismiss(toastId);
     }
@@ -89,7 +89,7 @@ const UpdateProductTypeModal = ({
       <DialogContent className="sm:max-w-lg rounded-lg">
         <DialogHeader>
           <DialogTitle className="text-center font-medium text-xl">
-            Update Product Type
+            Update Service Type
           </DialogTitle>
         </DialogHeader>
 
@@ -104,12 +104,12 @@ const UpdateProductTypeModal = ({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Product Type Name</FormLabel>
+                  <FormLabel>Service Type Name</FormLabel>
                   <FormControl>
                     <Input
                       required
                       className="bg-[#f5f5f5] py-6 border-none rounded-sm"
-                      placeholder="Enter product type name"
+                      placeholder="Enter service type name"
                       {...field}
                       value={field.value || ''}
                     />
@@ -150,4 +150,4 @@ const UpdateProductTypeModal = ({
   );
 };
 
-export default UpdateProductTypeModal;
+export default UpdateServiceTypeModal;
