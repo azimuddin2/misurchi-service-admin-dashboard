@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -16,18 +17,32 @@ import { Switch } from '@/components/ui/switch';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { AppButton } from '@/components/shared/app-button';
 import { ArrowRight } from 'lucide-react';
-import { createPlanValidationSchema } from './subscriptionValidation';
-import { useAddSubscriptionPlanMutation } from '@/redux/features/subscription/subscriptionApi';
-import { toast } from 'sonner';
-import { useAppSelector } from '@/redux/hooks';
-import { useRouter } from 'next/navigation';
-import { selectCurrentUser } from '@/redux/features/auth/authSlice';
 import { Textarea } from '@/components/ui/textarea';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+import { useAppSelector } from '@/redux/hooks';
+import { selectCurrentUser } from '@/redux/features/auth/authSlice';
+import { createPlanValidationSchema } from './subscriptionValidation';
+import {
+  useGetSubscriptionPlanByIdQuery,
+  useUpdateSubscriptionPlanMutation,
+} from '@/redux/features/subscription/subscriptionApi';
+import Spinner from '@/components/shared/Spinner';
+import Link from 'next/link';
 
-const AddSubscription = () => {
+type Props = {
+  id: string;
+};
+
+const EditSubscription = ({ id }: Props) => {
   const user = useAppSelector(selectCurrentUser);
   const userId = user?.userId as string;
   const router = useRouter();
+
+  const { data, isLoading } = useGetSubscriptionPlanByIdQuery(id);
+  const plan = data?.data;
+
+  const [updatePlan] = useUpdateSubscriptionPlanMutation();
 
   const form = useForm({
     resolver: zodResolver(createPlanValidationSchema),
@@ -54,42 +69,53 @@ const AddSubscription = () => {
     },
   });
 
+  // Populate form when plan is fetched
+  useEffect(() => {
+    if (plan) {
+      form.reset({
+        name: plan.name,
+        cost: plan.cost,
+        description: plan.description,
+        features: plan.features,
+        limits: plan.limits,
+        validity: plan.validity,
+      });
+    }
+  }, [plan]);
+
   const {
     formState: { isSubmitting },
   } = form;
 
-  const [addSubscriptionPlan] = useAddSubscriptionPlanMutation();
-
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    console.log('Plan Data:', data);
+    // const updatedData = { ...data };
 
-    const planData = {
-      user: userId,
-      ...data,
-    };
-
-    const toastId = toast.loading('Adding subscription plan...');
+    const toastId = toast.loading('Updating subscription plan...');
 
     try {
-      const res = await addSubscriptionPlan(planData).unwrap();
-      console.log(res);
-      toast.success(res.message || 'Subscription plan added successfully');
+      const res = await updatePlan({ id, data }).unwrap();
+      toast.success(res.message || 'Subscription plan updated successfully');
       router.push(`/${user?.role}/manage-subscription`);
     } catch (error: any) {
-      toast.error(error?.data?.message || 'Failed to add subscription plan');
+      toast.error(error?.data?.message || 'Failed to update plan');
     } finally {
       toast.dismiss(toastId);
     }
   };
 
+  if (isLoading) {
+    return <Spinner />;
+  }
+
   return (
     <div className="max-w-5xl mx-auto p-5 lg:p-8 bg-white rounded-lg">
       <div className="mb-5">
-        <h2 className="text-2xl font-semibold">Add Subscription Plan</h2>
+        <h2 className="text-2xl font-semibold">Edit Subscription Plan</h2>
         <p className="text-gray-500">
-          Configure plan details, features, and pricing
+          Update plan details, features, and pricing
         </p>
       </div>
+
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {/* Plan Info */}
@@ -104,9 +130,8 @@ const AddSubscription = () => {
                     <FormLabel>Plan Name</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="e.g. Basic Plan"
                         {...field}
-                        value={field.value || ''}
+                        placeholder="e.g. Basic Plan"
                         className="bg-[#f5f5f5] py-6 border rounded-sm"
                       />
                     </FormControl>
@@ -114,6 +139,7 @@ const AddSubscription = () => {
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="cost"
@@ -124,7 +150,6 @@ const AddSubscription = () => {
                       <Input
                         type="number"
                         {...field}
-                        value={field.value || 0}
                         onChange={(e) => field.onChange(Number(e.target.value))}
                         className="bg-[#f5f5f5] py-6 border rounded-sm"
                       />
@@ -134,6 +159,7 @@ const AddSubscription = () => {
                 )}
               />
             </div>
+
             {/* Description */}
             <FormField
               control={form.control}
@@ -175,12 +201,7 @@ const AddSubscription = () => {
                         <Switch
                           checked={field.value}
                           onCheckedChange={field.onChange}
-                          className={`
-            data-[state=checked]:bg-gradient-to-t 
-            data-[state=checked]:from-green-600/70 
-            data-[state=checked]:to-green-800
-            data-[state=unchecked]:bg-gray-300
-          `}
+                          className="data-[state=checked]:bg-gradient-to-t data-[state=checked]:from-green-600/70 data-[state=checked]:to-green-800 data-[state=unchecked]:bg-gray-300"
                         />
                       </FormControl>
                     </FormItem>
@@ -213,7 +234,6 @@ const AddSubscription = () => {
                         <Input
                           type="number"
                           {...field}
-                          value={field.value || 0}
                           onChange={(e) =>
                             field.onChange(Number(e.target.value))
                           }
@@ -242,31 +262,32 @@ const AddSubscription = () => {
                       onValueChange={field.onChange}
                       value={field.value}
                     >
-                      <div className="flex items-center space-x-2 border p-4 rounded-sm">
-                        <RadioGroupItem value="unlimited" id="unlimited" />
-                        <FormLabel htmlFor="unlimited">Unlimited</FormLabel>
-                      </div>
-                      <div className="flex items-center space-x-2 border p-4 rounded-sm">
-                        <RadioGroupItem value="1month" id="1month" />
-                        <FormLabel htmlFor="1month">1 Month</FormLabel>
-                      </div>
-                      <div className="flex items-center space-x-2 border p-4 rounded-sm">
-                        <RadioGroupItem value="3month" id="3month" />
-                        <FormLabel htmlFor="3month">3 Month</FormLabel>
-                      </div>
-                      <div className="flex items-center space-x-2 border p-4 rounded-sm">
-                        <RadioGroupItem value="6month" id="6month" />
-                        <FormLabel htmlFor="6month">6 Month</FormLabel>
-                      </div>
-                      <div className="flex items-center space-x-2 border p-4 rounded-sm">
-                        <RadioGroupItem value="custom" id="custom" />
-                        <FormLabel htmlFor="custom">Add any (months)</FormLabel>
-                      </div>
+                      {[
+                        'unlimited',
+                        '1month',
+                        '3month',
+                        '6month',
+                        'custom',
+                      ].map((val) => (
+                        <div
+                          key={val}
+                          className="flex items-center space-x-2 border p-4 rounded-sm"
+                        >
+                          <RadioGroupItem value={val} id={val} />
+                          <FormLabel htmlFor={val}>
+                            {val === 'custom'
+                              ? 'Add any (months)'
+                              : val.replace('month', ' Month')}
+                          </FormLabel>
+                        </div>
+                      ))}
                     </RadioGroup>
                   </FormControl>
                 </FormItem>
               )}
             />
+
+            {/* Custom months input */}
             {form.watch('validity.type') === 'custom' && (
               <FormField
                 control={form.control}
@@ -275,32 +296,47 @@ const AddSubscription = () => {
                   <FormItem className="mt-3">
                     <FormControl>
                       <Input
-                        placeholder="Enter custom duration in months"
                         {...field}
-                        value={field.value || ''}
+                        placeholder="Enter custom duration in months"
+                        type="number"
+                        value={field.value ?? ''} // <-- fix here
+                        onChange={(e) => field.onChange(Number(e.target.value))}
                         className="bg-[#f5f5f5] py-6 border rounded-sm"
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
             )}
           </div>
 
-          {/* Submit Button */}
-          <AppButton
-            className="w-full text-gray-50 text-base p-6 border-gray-800 bg-gradient-to-t to-green-800 from-green-500/70 hover:bg-green-500/80 mt-1"
-            content={
-              <div className="flex justify-center items-center space-x-2 uppercase">
-                <p>{isSubmitting ? 'Saving...' : 'Save'}</p>
-                <ArrowRight />
-              </div>
-            }
-          />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+            {/* Submit Button */}
+            <AppButton
+              className="text-gray-50 text-base p-6 border-gray-800 bg-gradient-to-t to-green-800 from-green-500/70 hover:bg-green-500/80 mt-1"
+              content={
+                <div className="flex justify-center items-center space-x-2 uppercase">
+                  <p>{isSubmitting ? 'Updating...' : 'Update'}</p>
+                  <ArrowRight />
+                </div>
+              }
+            />
+
+            <div className="mt-1 cursor-pointer text-sm rounded-sm border-b-4 border-r-4 border-gray-800 bg-white text-gray-800 shadow-sm shadow-gray-500 hover:bg-gray-100 transition-all">
+              <Link
+                href={`/admin/manage-subscription`}
+                className="flex w-full justify-center items-center space-x-2 font-semibold py-3"
+              >
+                <span className="uppercase text-base font-medium">Cancel</span>
+                <ArrowRight size={16} />
+              </Link>
+            </div>
+          </div>
         </form>
       </Form>
     </div>
   );
 };
 
-export default AddSubscription;
+export default EditSubscription;
