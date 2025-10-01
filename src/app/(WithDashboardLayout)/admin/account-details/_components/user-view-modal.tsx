@@ -7,21 +7,12 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
 import { IUser } from '@/types';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format } from 'date-fns';
 
-interface CancelModalProps {
+interface UserModalProps {
   selectedUser: IUser | null;
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
@@ -31,7 +22,7 @@ const UserViewModal = ({
   selectedUser,
   isOpen,
   onOpenChange,
-}: CancelModalProps) => {
+}: UserModalProps) => {
   const joinDate = selectedUser?.createdAt
     ? format(new Date(selectedUser?.createdAt), 'dd MMM, yyyy')
     : '';

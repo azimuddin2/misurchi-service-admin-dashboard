@@ -1,6 +1,5 @@
 'use client';
 
-import { TProduct } from '@/types/product.type';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
@@ -17,12 +16,12 @@ import Image from 'next/image';
 import { format, parseISO } from 'date-fns';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { useGetAllProductsByUserQuery } from '@/redux/features/product/productApi';
 import Spinner from '@/components/shared/Spinner';
 import { ADTable } from '@/components/modules/ADTable';
 import ADPagination from '@/components/modules/ADPagination';
 import { useGetAllServicesByUserQuery } from '@/redux/features/service/serviceApi';
 import { TService } from '@/types/service.type';
+import ServiceViewModal from './service-view-modal';
 
 type Props = {
   vendorId: string;
@@ -33,8 +32,9 @@ const Services = ({ vendorId }: Props) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [selectedService, setSelectedService] = useState<TService | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const [search, setSearch] = useState<string>(
@@ -182,11 +182,10 @@ const Services = ({ vendorId }: Props) => {
             <Tooltip>
               <TooltipTrigger>
                 <Eye
-                  onClick={() =>
-                    router.push(
-                      `/${user?.role}/manage-offering/view-product/${row.original._id}`,
-                    )
-                  }
+                  onClick={() => {
+                    setSelectedService(row.original);
+                    setIsModalOpen(true);
+                  }}
                   size={20}
                   className="text-blue-500 cursor-pointer"
                 />
@@ -239,6 +238,13 @@ const Services = ({ vendorId }: Props) => {
       {/* Table & Pagination */}
       <ADTable columns={columns} data={products || []} />
       <ADPagination totalPage={meta?.totalPage} />
+
+      {/* Single Service Modal */}
+      <ServiceViewModal
+        selectedService={selectedService}
+        isOpen={isModalOpen}
+        onOpenChange={setIsModalOpen}
+      />
     </div>
   );
 };

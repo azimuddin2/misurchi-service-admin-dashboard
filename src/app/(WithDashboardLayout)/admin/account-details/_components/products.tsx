@@ -21,6 +21,7 @@ import { useGetAllProductsByUserQuery } from '@/redux/features/product/productAp
 import Spinner from '@/components/shared/Spinner';
 import { ADTable } from '@/components/modules/ADTable';
 import ADPagination from '@/components/modules/ADPagination';
+import ProductViewModal from './product-view-modal';
 
 type Props = {
   vendorId: string;
@@ -31,8 +32,9 @@ const Products = ({ vendorId }: Props) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<TProduct | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const [search, setSearch] = useState<string>(
@@ -49,7 +51,7 @@ const Products = ({ vendorId }: Props) => {
   const searchTerm = searchParams.get('searchTerm') || '';
   const createdAt = searchParams.get('createdAt') || '';
 
-  const { data, isLoading, refetch } = useGetAllProductsByUserQuery({
+  const { data, isLoading } = useGetAllProductsByUserQuery({
     vendorId,
     page,
     limit,
@@ -175,11 +177,10 @@ const Products = ({ vendorId }: Props) => {
             <Tooltip>
               <TooltipTrigger>
                 <Eye
-                  onClick={() =>
-                    router.push(
-                      `/${user?.role}/manage-offering/view-product/${row.original._id}`,
-                    )
-                  }
+                  onClick={() => {
+                    setSelectedProduct(row.original);
+                    setIsModalOpen(true);
+                  }}
                   size={20}
                   className="text-blue-500 cursor-pointer"
                 />
@@ -232,6 +233,13 @@ const Products = ({ vendorId }: Props) => {
       {/* Table & Pagination */}
       <ADTable columns={columns} data={products || []} />
       <ADPagination totalPage={meta?.totalPage} />
+
+      {/* Single Product Modal */}
+      <ProductViewModal
+        selectedProduct={selectedProduct}
+        isOpen={isModalOpen}
+        onOpenChange={setIsModalOpen}
+      />
     </div>
   );
 };

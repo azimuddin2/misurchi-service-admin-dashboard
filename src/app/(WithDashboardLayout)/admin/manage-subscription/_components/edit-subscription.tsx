@@ -36,7 +36,6 @@ type Props = {
 
 const EditSubscription = ({ id }: Props) => {
   const user = useAppSelector(selectCurrentUser);
-  const userId = user?.userId as string;
   const router = useRouter();
 
   const { data, isLoading } = useGetSubscriptionPlanByIdQuery(id);
