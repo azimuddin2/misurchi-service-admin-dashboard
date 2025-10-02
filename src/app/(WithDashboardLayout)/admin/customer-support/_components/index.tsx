@@ -15,17 +15,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-
-type TContact = {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  date: string;
-};
+import { useGetAllSupportMessageQuery } from '@/redux/features/support/supportApi';
+import { TSupport } from '@/types/support.type';
+import Spinner from '@/components/shared/Spinner';
+import SupportReplyModal from './support-reply-modal';
 
 const CustomerSupport = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
+
+  const [updateData, setUpdateData] = useState<TSupport | null>(null);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -39,96 +39,24 @@ const CustomerSupport = () => {
     initialDate,
   );
 
-  // const page = searchParams.get('page') || 1;
-  // const limit = searchParams.get('limit') || 10;
-  // const searchTerm = searchParams.get('searchTerm') || '';
-  // const createdAt = searchParams.get('createdAt') || '';
+  const page = searchParams.get('page') || 1;
+  const limit = searchParams.get('limit') || 10;
+  const searchTerm = searchParams.get('searchTerm') || '';
+  const createdAt = searchParams.get('createdAt') || '';
 
-  // const { data, isLoading, refetch } = useGetAllUsersQuery({
-  //     page,
-  //     limit,
-  //     query: {
-  //         searchTerm,
-  //         createdAt,
-  //     },
-  // });
+  const { data, isLoading, refetch } = useGetAllSupportMessageQuery({
+    page,
+    limit,
+    query: {
+      searchTerm,
+      createdAt,
+    },
+  });
 
-  // const users = data?.data || [];
-  // const meta = data?.meta || { totalPage: 1 };
+  const supportMessages = data?.data || [];
+  const meta = data?.meta || { totalPage: 1 };
 
-  const payouts = [
-    {
-      _id: 'c1',
-      firstName: 'James',
-      lastName: 'Anderson',
-      email: 'james.anderson@example.com',
-      date: '2025-07-01T09:15:00.000Z',
-    },
-    {
-      _id: 'c2',
-      firstName: 'Sophia',
-      lastName: 'Martinez',
-      email: 'sophia.martinez@example.com',
-      date: '2025-07-02T10:45:00.000Z',
-    },
-    {
-      _id: 'c3',
-      firstName: 'Liam',
-      lastName: 'Walker',
-      email: 'liam.walker@example.com',
-      date: '2025-07-03T14:30:00.000Z',
-    },
-    {
-      _id: 'c4',
-      firstName: 'Olivia',
-      lastName: 'Brown',
-      email: 'olivia.brown@example.com',
-      date: '2025-07-04T16:20:00.000Z',
-    },
-    {
-      _id: 'c5',
-      firstName: 'Ethan',
-      lastName: 'Harris',
-      email: 'ethan.harris@example.com',
-      date: '2025-07-05T11:10:00.000Z',
-    },
-    {
-      _id: 'c6',
-      firstName: 'Ava',
-      lastName: 'Wilson',
-      email: 'ava.wilson@example.com',
-      date: '2025-07-06T13:55:00.000Z',
-    },
-    {
-      _id: 'c7',
-      firstName: 'Noah',
-      lastName: 'Taylor',
-      email: 'noah.taylor@example.com',
-      date: '2025-07-07T08:40:00.000Z',
-    },
-    {
-      _id: 'c8',
-      firstName: 'Mia',
-      lastName: 'Clark',
-      email: 'mia.clark@example.com',
-      date: '2025-07-08T15:05:00.000Z',
-    },
-    {
-      _id: 'c9',
-      firstName: 'William',
-      lastName: 'Hall',
-      email: 'william.hall@example.com',
-      date: '2025-07-09T12:25:00.000Z',
-    },
-    {
-      _id: 'c10',
-      firstName: 'Isabella',
-      lastName: 'Scott',
-      email: 'isabella.scott@example.com',
-      date: '2025-07-10T17:45:00.000Z',
-    },
-  ];
-  const meta = { totalPage: 1 };
+  console.log(supportMessages);
 
   // search & createdAt date filtering part
   const updateSearchParams = useCallback(
@@ -170,7 +98,7 @@ const CustomerSupport = () => {
   }, [searchParams]);
 
   // Table columns
-  const columns: ColumnDef<TContact>[] = [
+  const columns: ColumnDef<TSupport>[] = [
     {
       id: 'select',
       header: ({ table }) => (
@@ -219,9 +147,10 @@ const CustomerSupport = () => {
       cell: ({ row }) => <span>{row.original.email}</span>,
     },
     {
-      accessorKey: 'date',
+      accessorKey: 'createdAt',
       header: 'Date',
-      cell: ({ row }) => format(new Date(row.original.date), 'dd MMM, yyyy'),
+      cell: ({ row }) =>
+        format(new Date(row.original.createdAt), 'dd MMM, yyyy'),
     },
     {
       accessorKey: 'action',
@@ -232,6 +161,10 @@ const CustomerSupport = () => {
             <Tooltip>
               <TooltipTrigger>
                 <Eye
+                  onClick={() => {
+                    setUpdateData(row.original); // save selected row data
+                    setUpdateModalOpen(true); // open update modal
+                  }}
                   size={22}
                   className="text-[#78C0A8] cursor-pointer hover:text-[#165940]"
                 />
@@ -243,6 +176,10 @@ const CustomerSupport = () => {
       ),
     },
   ];
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
     <div>
@@ -278,9 +215,19 @@ const CustomerSupport = () => {
       </div>
 
       <div>
-        <ADTable columns={columns} data={payouts || []} />
+        <ADTable columns={columns} data={supportMessages || []} />
       </div>
-      <ADPagination totalPage={meta?.totalPage} />
+      {supportMessages?.length > 0 && (
+        <ADPagination totalPage={meta?.totalPage} />
+      )}
+
+      {/* Support Message Reply Type Modal  */}
+      <SupportReplyModal
+        isOpen={isUpdateModalOpen}
+        onOpenChange={setUpdateModalOpen}
+        refetch={refetch}
+        supportData={updateData}
+      />
     </div>
   );
 };
