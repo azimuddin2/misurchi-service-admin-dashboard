@@ -113,7 +113,7 @@ const SupportReplyModal = ({
               </p>
               <p className="mt-3">
                 <span className="text-base text-gray-500">Message</span> <br />
-                <span>{supportData?.message}</span>
+                <span className='text-sm'>{supportData?.message}</span>
               </p>
             </div>
 
