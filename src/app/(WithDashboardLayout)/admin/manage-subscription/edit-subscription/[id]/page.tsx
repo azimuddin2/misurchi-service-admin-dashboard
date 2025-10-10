@@ -1,9 +1,15 @@
 import EditSubscription from '../../_components/edit-subscription';
 
-const EditSubscriptionPage = ({ params }: { params: { id: string } }) => {
+const EditSubscriptionPage = async ({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) => {
+  const subscriptionID = (await params).id;
+
   return (
     <div>
-      <EditSubscription id={params.id} />
+      <EditSubscription id={subscriptionID} />
     </div>
   );
 };

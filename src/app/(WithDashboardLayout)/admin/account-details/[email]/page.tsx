@@ -1,9 +1,15 @@
 import VendorViewAccount from '../_components/vendor-view-account';
 
-const ViewAccountPage = ({ params }: { params: { email: string } }) => {
+const ViewAccountPage = async ({
+  params,
+}: {
+  params: Promise<{ email: string }>;
+}) => {
+  const userEmail = (await params).email;
+
   return (
     <div>
-      <VendorViewAccount email={params.email} />
+      <VendorViewAccount email={userEmail} />
     </div>
   );
 };

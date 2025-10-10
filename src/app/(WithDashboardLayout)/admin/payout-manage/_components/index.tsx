@@ -57,7 +57,7 @@ const PayoutManage = () => {
   // const users = data?.data || [];
   // const meta = data?.meta || { totalPage: 1 };
 
-  const payouts = [
+  const payouts: TPayout[] = [
     {
       _id: '1',
       name: 'Azim Uddin',

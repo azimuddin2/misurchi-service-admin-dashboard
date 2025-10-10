@@ -182,7 +182,6 @@ const EditProfile = ({ userData, imageFile, refetch }: Props) => {
 
           {/* Submit Button */}
           <AppButton
-            type="submit"
             className="w-full text-gray-50 border-gray-800 bg-gradient-to-t to-green-800 from-green-500/70 hover:bg-green-500/80"
             content={
               <div className="flex justify-center items-center space-x-2 font-semibold">

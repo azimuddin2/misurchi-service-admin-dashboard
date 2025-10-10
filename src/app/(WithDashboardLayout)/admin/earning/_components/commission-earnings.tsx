@@ -52,7 +52,7 @@ const CommissionEarnings = () => {
   // const users = data?.data || [];
   // const meta = data?.meta || { totalPage: 1 };
 
-  const commissionEarnings = [
+  const commissionEarnings:TCommissionEarnings[] = [
     {
       _id: '1',
       providerName: 'Netflix',
@@ -285,9 +285,8 @@ const CommissionEarnings = () => {
         />
       </div>
 
-      <div>
-        <ADTable columns={columns} data={commissionEarnings || []} />
-      </div>
+
+      <ADTable columns={columns} data={commissionEarnings || []} />
       <ADPagination totalPage={meta?.totalPage} />
     </div>
   );

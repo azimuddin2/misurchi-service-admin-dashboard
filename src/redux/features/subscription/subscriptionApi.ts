@@ -20,7 +20,7 @@ const subscriptionPlanApi = baseApi.injectEndpoints({
       invalidatesTags: ['SubscriptionPlan'],
     }),
 
-    getAllSubscriptionPlans: builder.query<TResponse<TSubscriptionPlan[]>, {}>({
+    getAllSubscriptionPlans: builder.query<TResponse<TSubscriptionPlan[]>, any>({
       query: () => ({
         url: `/plans`,
         method: 'GET',
