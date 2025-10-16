@@ -6,7 +6,9 @@ export const createPlanValidationSchema = z.object({
     .string({ required_error: 'Plan name is required' })
     .min(3, 'Plan name must be at least 3 characters'),
   cost: z.number().min(0, 'Cost cannot be negative'),
-  description: z.string({ required_error: 'Description is required' }),
+  description: z
+    .string({ required_error: 'Description is required' })
+    .min(3, 'Plan description must be at least 12 characters'),
   features: z.object({
     teamMembers: z.boolean(),
     sharedCalendar: z.boolean(),
@@ -19,8 +21,7 @@ export const createPlanValidationSchema = z.object({
     highlightOfferMax: z.number(),
     transactionFee: z.number(),
   }),
-  validity: z.object({
-    type: z.enum(['unlimited', '1month', '3month', '6month', 'custom']),
-    durationInMonths: z.string().optional().nullable(),
-  }),
+
+  // ✅ validity as enum (not object)
+  validity: z.enum(['free', '1month', '1year']),
 });

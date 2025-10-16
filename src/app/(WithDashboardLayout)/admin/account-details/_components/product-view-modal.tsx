@@ -184,19 +184,23 @@ const ProductViewModal = ({
                         </span>
                       </div>
 
-                      <div className="my-2 font-medium flex justify-between items-center bg-gradient-to-t to-[#cadfe7] from-[#d9ebe8] border-t border-b border-[#00325099] p-5">
-                        <span>Product Colors</span>
+                      <div className="my-2 font-medium flex flex-col sm:flex-row justify-between items-start sm:items-center bg-gradient-to-t to-[#cadfe7] from-[#d9ebe8] border-t border-b border-[#00325099] p-4">
+                        <span className="mb-2 sm:mb-0">Product Colors:</span>
                         <div className="flex gap-2 flex-wrap">
                           {selectedProduct?.colors?.map(
                             (color: string, index: number) => (
                               <span
                                 key={index}
-                                className="rounded-full text-sm font-medium border capitalize"
+                                className="flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium border shadow-sm"
                                 style={{
-                                  backgroundColor: color,
-                                  color: '#fff',
-                                }}
+                                  backgroundColor: '#fff',
+                                  color: '#000',
+                                }} // text color stays black
                               >
+                                <span
+                                  className="w-4 h-4 rounded-full border"
+                                  style={{ backgroundColor: color }}
+                                />
                                 {color}
                               </span>
                             ),

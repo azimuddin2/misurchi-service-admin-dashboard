@@ -23,13 +23,17 @@ import { useAppSelector } from '@/redux/hooks';
 import { useRouter } from 'next/navigation';
 import { selectCurrentUser } from '@/redux/features/auth/authSlice';
 import { Textarea } from '@/components/ui/textarea';
+import z from 'zod';
 
 const AddSubscription = () => {
   const user = useAppSelector(selectCurrentUser);
   const userId = user?.userId as string;
   const router = useRouter();
 
-  const form = useForm({
+  // Infer the TypeScript type from Zod
+  type CreatePlanFormValues = z.infer<typeof createPlanValidationSchema>;
+
+  const form = useForm<CreatePlanFormValues>({
     resolver: zodResolver(createPlanValidationSchema),
     defaultValues: {
       name: '',
@@ -47,10 +51,7 @@ const AddSubscription = () => {
         highlightOfferMax: 0,
         transactionFee: 0,
       },
-      validity: {
-        type: '1month',
-        durationInMonths: '',
-      },
+      validity: '1month', // ✅ now TypeScript knows this is a valid TValidityType
     },
   });
 
@@ -101,7 +102,9 @@ const AddSubscription = () => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Plan Name</FormLabel>
+                    <FormLabel className="!text-gray-700 !text-sm font-medium">
+                      Plan Name
+                    </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="e.g. Basic Plan"
@@ -146,8 +149,8 @@ const AddSubscription = () => {
                   <FormControl>
                     <Textarea
                       {...field}
-                      rows={8}
-                      className="bg-[#f5f5f5] py-3 px-3 border-none rounded-sm w-full h-12"
+                      rows={16}
+                      className="bg-[#f5f5f5] py-3 px-3 border-none rounded-sm w-full h-28"
                       placeholder="Enter short description here..."
                     />
                   </FormControl>
@@ -229,63 +232,34 @@ const AddSubscription = () => {
           </div>
 
           {/* Validity */}
-          <div>
-            <h3 className="text-xl font-medium mb-4">Plan Validity</h3>
-            <FormField
-              control={form.control}
-              name="validity.type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <RadioGroup
-                      className="grid grid-cols-2 lg:grid-cols-5 gap-4"
-                      onValueChange={field.onChange}
-                      value={field.value}
-                    >
-                      <div className="flex items-center space-x-2 border p-4 rounded-sm">
-                        <RadioGroupItem value="unlimited" id="unlimited" />
-                        <FormLabel htmlFor="unlimited">Unlimited</FormLabel>
-                      </div>
-                      <div className="flex items-center space-x-2 border p-4 rounded-sm">
-                        <RadioGroupItem value="1month" id="1month" />
-                        <FormLabel htmlFor="1month">1 Month</FormLabel>
-                      </div>
-                      <div className="flex items-center space-x-2 border p-4 rounded-sm">
-                        <RadioGroupItem value="3month" id="3month" />
-                        <FormLabel htmlFor="3month">3 Month</FormLabel>
-                      </div>
-                      <div className="flex items-center space-x-2 border p-4 rounded-sm">
-                        <RadioGroupItem value="6month" id="6month" />
-                        <FormLabel htmlFor="6month">6 Month</FormLabel>
-                      </div>
-                      <div className="flex items-center space-x-2 border p-4 rounded-sm">
-                        <RadioGroupItem value="custom" id="custom" />
-                        <FormLabel htmlFor="custom">Add any (months)</FormLabel>
-                      </div>
-                    </RadioGroup>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            {form.watch('validity.type') === 'custom' && (
-              <FormField
-                control={form.control}
-                name="validity.durationInMonths"
-                render={({ field }) => (
-                  <FormItem className="mt-3">
-                    <FormControl>
-                      <Input
-                        placeholder="Enter custom duration in months"
-                        {...field}
-                        value={field.value || ''}
-                        className="bg-[#f5f5f5] py-6 border rounded-sm"
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+          <FormField
+            control={form.control}
+            name="validity"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <RadioGroup
+                    className="grid grid-cols-3 gap-4"
+                    onValueChange={field.onChange}
+                    value={field.value}
+                  >
+                    <div className="flex items-center space-x-2 border p-4 rounded-sm">
+                      <RadioGroupItem value="free" id="free" />
+                      <FormLabel htmlFor="free">Free</FormLabel>
+                    </div>
+                    <div className="flex items-center space-x-2 border p-4 rounded-sm">
+                      <RadioGroupItem value="1month" id="1month" />
+                      <FormLabel htmlFor="1month">1 Month</FormLabel>
+                    </div>
+                    <div className="flex items-center space-x-2 border p-4 rounded-sm">
+                      <RadioGroupItem value="1year" id="1year" />
+                      <FormLabel htmlFor="1year">1 Year</FormLabel>
+                    </div>
+                  </RadioGroup>
+                </FormControl>
+              </FormItem>
             )}
-          </div>
+          />
 
           {/* Submit Button */}
           <AppButton

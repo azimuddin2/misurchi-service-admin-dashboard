@@ -29,6 +29,7 @@ import {
 } from '@/redux/features/subscription/subscriptionApi';
 import Spinner from '@/components/shared/Spinner';
 import Link from 'next/link';
+import z from 'zod';
 
 type Props = {
   id: string;
@@ -43,7 +44,10 @@ const EditSubscription = ({ id }: Props) => {
 
   const [updatePlan] = useUpdateSubscriptionPlanMutation();
 
-  const form = useForm({
+  // Infer the TypeScript type from Zod
+  type CreatePlanFormValues = z.infer<typeof createPlanValidationSchema>;
+
+  const form = useForm<CreatePlanFormValues>({
     resolver: zodResolver(createPlanValidationSchema),
     defaultValues: {
       name: '',
@@ -61,10 +65,7 @@ const EditSubscription = ({ id }: Props) => {
         highlightOfferMax: 0,
         transactionFee: 0,
       },
-      validity: {
-        type: '1month',
-        durationInMonths: '',
-      },
+      validity: '1month', // ✅ now TypeScript knows this is a valid TValidityType
     },
   });
 
@@ -126,11 +127,14 @@ const EditSubscription = ({ id }: Props) => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Plan Name</FormLabel>
+                    <FormLabel className="!text-gray-700 !text-sm font-medium">
+                      Plan Name
+                    </FormLabel>
                     <FormControl>
                       <Input
-                        {...field}
                         placeholder="e.g. Basic Plan"
+                        {...field}
+                        value={field.value || ''}
                         className="bg-[#f5f5f5] py-6 border rounded-sm"
                       />
                     </FormControl>
@@ -138,7 +142,6 @@ const EditSubscription = ({ id }: Props) => {
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="cost"
@@ -149,6 +152,7 @@ const EditSubscription = ({ id }: Props) => {
                       <Input
                         type="number"
                         {...field}
+                        value={field.value || 0}
                         onChange={(e) => field.onChange(Number(e.target.value))}
                         className="bg-[#f5f5f5] py-6 border rounded-sm"
                       />
@@ -158,7 +162,6 @@ const EditSubscription = ({ id }: Props) => {
                 )}
               />
             </div>
-
             {/* Description */}
             <FormField
               control={form.control}
@@ -171,8 +174,8 @@ const EditSubscription = ({ id }: Props) => {
                   <FormControl>
                     <Textarea
                       {...field}
-                      rows={8}
-                      className="bg-[#f5f5f5] py-3 px-3 border-none rounded-sm w-full h-12"
+                      rows={16}
+                      className="bg-[#f5f5f5] py-3 px-3 border-none rounded-sm w-full h-28"
                       placeholder="Enter short description here..."
                     />
                   </FormControl>
@@ -200,7 +203,12 @@ const EditSubscription = ({ id }: Props) => {
                         <Switch
                           checked={field.value}
                           onCheckedChange={field.onChange}
-                          className="data-[state=checked]:bg-gradient-to-t data-[state=checked]:from-green-600/70 data-[state=checked]:to-green-800 data-[state=unchecked]:bg-gray-300"
+                          className={`
+            data-[state=checked]:bg-gradient-to-t 
+            data-[state=checked]:from-green-600/70 
+            data-[state=checked]:to-green-800
+            data-[state=unchecked]:bg-gray-300
+          `}
                         />
                       </FormControl>
                     </FormItem>
@@ -233,6 +241,7 @@ const EditSubscription = ({ id }: Props) => {
                         <Input
                           type="number"
                           {...field}
+                          value={field.value || 0}
                           onChange={(e) =>
                             field.onChange(Number(e.target.value))
                           }
@@ -248,90 +257,45 @@ const EditSubscription = ({ id }: Props) => {
           </div>
 
           {/* Validity */}
-          <div>
-            <h3 className="text-xl font-medium mb-4">Plan Validity</h3>
-            <FormField
-              control={form.control}
-              name="validity.type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <RadioGroup
-                      className="grid grid-cols-2 lg:grid-cols-5 gap-4"
-                      onValueChange={field.onChange}
-                      value={field.value}
-                    >
-                      {[
-                        'unlimited',
-                        '1month',
-                        '3month',
-                        '6month',
-                        'custom',
-                      ].map((val) => (
-                        <div
-                          key={val}
-                          className="flex items-center space-x-2 border p-4 rounded-sm"
-                        >
-                          <RadioGroupItem value={val} id={val} />
-                          <FormLabel htmlFor={val}>
-                            {val === 'custom'
-                              ? 'Add any (months)'
-                              : val.replace('month', ' Month')}
-                          </FormLabel>
-                        </div>
-                      ))}
-                    </RadioGroup>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            {/* Custom months input */}
-            {form.watch('validity.type') === 'custom' && (
-              <FormField
-                control={form.control}
-                name="validity.durationInMonths"
-                render={({ field }) => (
-                  <FormItem className="mt-3">
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Enter custom duration in months"
-                        type="number"
-                        value={field.value ?? ''} // <-- fix here
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        className="bg-[#f5f5f5] py-6 border rounded-sm"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <FormField
+            control={form.control}
+            name="validity"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <RadioGroup
+                    className="grid grid-cols-3 gap-4"
+                    onValueChange={field.onChange}
+                    value={field.value}
+                  >
+                    <div className="flex items-center space-x-2 border p-4 rounded-sm">
+                      <RadioGroupItem value="free" id="free" />
+                      <FormLabel htmlFor="free">Free</FormLabel>
+                    </div>
+                    <div className="flex items-center space-x-2 border p-4 rounded-sm">
+                      <RadioGroupItem value="1month" id="1month" />
+                      <FormLabel htmlFor="1month">1 Month</FormLabel>
+                    </div>
+                    <div className="flex items-center space-x-2 border p-4 rounded-sm">
+                      <RadioGroupItem value="1year" id="1year" />
+                      <FormLabel htmlFor="1year">1 Year</FormLabel>
+                    </div>
+                  </RadioGroup>
+                </FormControl>
+              </FormItem>
             )}
-          </div>
+          />
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-            {/* Submit Button */}
-            <AppButton
-              className="text-gray-50 text-base p-6 border-gray-800 bg-gradient-to-t to-green-800 from-green-500/70 hover:bg-green-500/80 mt-1"
-              content={
-                <div className="flex justify-center items-center space-x-2 uppercase">
-                  <p>{isSubmitting ? 'Updating...' : 'Update'}</p>
-                  <ArrowRight />
-                </div>
-              }
-            />
-
-            <div className="mt-1 cursor-pointer text-sm rounded-sm border-b-4 border-r-4 border-gray-800 bg-white text-gray-800 shadow-sm shadow-gray-500 hover:bg-gray-100 transition-all">
-              <Link
-                href={`/admin/manage-subscription`}
-                className="flex w-full justify-center items-center space-x-2 font-semibold py-3"
-              >
-                <span className="uppercase text-base font-medium">Cancel</span>
-                <ArrowRight size={16} />
-              </Link>
-            </div>
-          </div>
+          {/* Submit Button */}
+          <AppButton
+            className="w-full text-gray-50 text-base p-6 border-gray-800 bg-gradient-to-t to-green-800 from-green-500/70 hover:bg-green-500/80 mt-1"
+            content={
+              <div className="flex justify-center items-center space-x-2 uppercase">
+                <p>{isSubmitting ? 'Saving...' : 'Save'}</p>
+                <ArrowRight />
+              </div>
+            }
+          />
         </form>
       </Form>
     </div>

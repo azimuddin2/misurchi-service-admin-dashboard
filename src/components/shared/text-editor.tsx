@@ -92,7 +92,10 @@ export const TextEditor = ({
           {/* Toolbar */}
           <div className="lg:px-3 py-2 border-b flex items-center gap-1 flex-wrap justify-end">
             {/* Font Size */}
-            <Select defaultValue="3" onValueChange={(v) => format('fontSize', v)}>
+            <Select
+              defaultValue="3"
+              onValueChange={(v) => format('fontSize', v)}
+            >
               <SelectTrigger className="w-16 h-8 text-xs">
                 <SelectValue />
               </SelectTrigger>

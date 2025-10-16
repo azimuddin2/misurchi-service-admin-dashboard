@@ -18,6 +18,20 @@ const ManageSubscription = () => {
     return <Spinner />;
   }
 
+  // ✅ Helper function to format validity nicely
+  const formatValidity = (validity: string) => {
+    switch (validity) {
+      case 'free':
+        return 'Free';
+      case '1month':
+        return '1 Month';
+      case '1year':
+        return '1 Year';
+      default:
+        return 'N/A';
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-16">
       {/* Add Subscription Button */}
@@ -49,7 +63,7 @@ const ManageSubscription = () => {
             </p>
 
             {/* Price */}
-            <div className="bg-gradient-to-t to-green-800 from-green-500/70 hover:bg-green-500/80 text-white text-center py-4 rounded-md mb-8">
+            <div className="bg-gradient-to-t to-green-800 from-green-500/70 text-white text-center py-4 rounded-md mb-8">
               {plan.cost === 0 ? (
                 <span className="text-3xl font-bold">Free</span>
               ) : (
@@ -57,25 +71,21 @@ const ManageSubscription = () => {
                   <span className="text-3xl font-bold">
                     ${plan.cost.toFixed(2)}
                   </span>
-                  {plan.validity.type === 'custom' ? (
-                    <span className="text-xl">
-                      /{plan.validity.durationInMonths} months
-                    </span>
-                  ) : plan.validity.type !== 'unlimited' ? (
-                    <span className="text-xl">
-                      /{plan.validity.type.replace('month', ' month')}
-                    </span>
-                  ) : null}
+                  <span className="text-xl">
+                    {' '}
+                    / {formatValidity(plan.validity)}
+                  </span>
                 </>
               )}
             </div>
 
             {/* Features */}
             <ul className="space-y-4 mb-8">
-              {/* Cost */}
               <li className="flex items-center gap-2">
                 <Image src={checkIcon} alt="check" width={20} />
-                <span>Cost: {plan.cost === 0 ? 'Free' : `$${plan.cost}`}</span>
+                <span>
+                  Cost: {plan.cost === 0 ? 'Free' : `$${plan.cost.toFixed(2)}`}
+                </span>
               </li>
 
               {/* Dynamic Features */}
@@ -145,12 +155,7 @@ const ManageSubscription = () => {
               <li className="flex items-center gap-2">
                 <Image src={checkIcon} alt="check" width={20} />
                 <span className="capitalize">
-                  Validity:{' '}
-                  {plan.validity.type === 'custom'
-                    ? `${plan.validity.durationInMonths} months`
-                    : plan.validity.type === 'unlimited'
-                      ? 'Unlimited'
-                      : plan.validity.type.replace('month', ' month')}
+                  Validity: {formatValidity(plan.validity)}
                 </span>
               </li>
             </ul>
