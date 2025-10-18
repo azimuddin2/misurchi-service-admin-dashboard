@@ -5,8 +5,17 @@ import SubscriptionEarnings from './subscription-earnings';
 import CommissionEarnings from './commission-earnings';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowDown, ArrowUp } from 'lucide-react';
+import { useGetAdminDashboardStatsQuery } from '@/redux/features/dashboard/dashboardApi';
+import { TAdminDashboardStats } from '@/types/dashboard.type';
+import CountUp from 'react-countup';
 
 const Earning = () => {
+  const { data } = useGetAdminDashboardStatsQuery({});
+  const adminDashboardStats = data?.data as TAdminDashboardStats;
+
+  const totalIncome = adminDashboardStats?.totalIncome || 0;
+  const totalSubscriptions = adminDashboardStats?.totalSubscriptions || 0;
+
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-sora mb-5">
@@ -21,7 +30,16 @@ const Earning = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <h2 className="text-3xl font-semibold text-ns-title">$1250.00</h2>
+            <h2 className="text-3xl font-semibold text-ns-title">
+              $
+              <CountUp
+                end={totalIncome}
+                duration={1.5}
+                decimals={2} // ensures 2 decimal places
+                separator="," // adds thousands separator
+                decimal="." // decimal point
+              />
+            </h2>
             <p className="mt-2 text-base font-medium text-[#7F7F7F] text-sc-clarity-ice">
               Last 30 days
             </p>
@@ -38,7 +56,9 @@ const Earning = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <h2 className="text-3xl font-semibold text-ns-title">200</h2>
+            <h2 className="text-3xl font-semibold text-ns-title">
+              <CountUp end={totalSubscriptions} duration={1.5} separator="," />
+            </h2>
             <p className="mt-2 text-base font-medium text-[#7F7F7F] text-sc-clarity-ice">
               Last 30 days
             </p>
@@ -46,7 +66,7 @@ const Earning = () => {
         </Card>
       </div>
       <Tabs defaultValue="subscription" className="w-full mx-auto">
-        <TabsList className="flex rounded-md w-full py-5 lg:max-w-6xl gap-1 mx-auto gap-0 lg:gap-3 shadow-none">
+        <TabsList className="flex rounded-md w-full py-5 lg:max-w-6xl mx-auto gap-2 lg:gap-3 shadow-none">
           {/* Subscription Tab */}
           <TabsTrigger
             value="subscription"

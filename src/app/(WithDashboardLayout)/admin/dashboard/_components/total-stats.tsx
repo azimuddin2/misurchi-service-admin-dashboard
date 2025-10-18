@@ -1,9 +1,18 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useGetAdminDashboardStatsQuery } from '@/redux/features/dashboard/dashboardApi';
+import { TAdminDashboardStats } from '@/types/dashboard.type';
 import { ArrowDown, ArrowUp } from 'lucide-react';
+import CountUp from 'react-countup';
 
 const TotalStats = () => {
+  const { data } = useGetAdminDashboardStatsQuery({});
+  const adminDashboardStats = data?.data as TAdminDashboardStats;
+
+  const totalUsers = adminDashboardStats?.totalUsers || 0;
+  const totalIncome = adminDashboardStats?.totalIncome || 0;
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-sora">
       <Card className="border-none shadow">
@@ -17,7 +26,9 @@ const TotalStats = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <h2 className="text-3xl font-semibold text-ns-title">200</h2>
+          <h2 className="text-3xl font-semibold text-ns-title">
+            <CountUp end={totalUsers} duration={1.5} separator="," />
+          </h2>
           <p className="mt-2 text-base font-medium text-[#7F7F7F] text-sc-clarity-ice">
             Last 30 days
           </p>
@@ -34,7 +45,16 @@ const TotalStats = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <h2 className="text-3xl font-semibold text-ns-title">$1250.00</h2>
+          <h2 className="text-3xl font-semibold text-ns-title">
+            $
+            <CountUp
+              end={totalIncome}
+              duration={1.5}
+              decimals={2} // ensures 2 decimal places
+              separator="," // adds thousands separator
+              decimal="." // decimal point
+            />
+          </h2>
           <p className="mt-2 text-base font-medium text-[#7F7F7F] text-sc-clarity-ice">
             Last 30 days
           </p>
