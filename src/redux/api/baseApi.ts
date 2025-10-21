@@ -15,7 +15,7 @@ const baseQuery = fetchBaseQuery({
   baseUrl: 'http://10.10.10.93:5000/api/v1',
   credentials: 'include',
   prepareHeaders: (headers, { getState }) => {
-    const token = (getState() as RootState).auth.token;
+    const token = (getState() as RootState).auth?.token;
 
     if (token) {
       headers.set('authorization', token);
@@ -48,7 +48,7 @@ const baseQueryWithRefreshToken: BaseQueryFn<
     const data = await res.json();
 
     if (data?.data?.accessToken) {
-      const user = (api.getState() as RootState).auth.user;
+      const user = (api.getState() as RootState).auth?.user;
 
       api.dispatch(
         setUser({
@@ -80,6 +80,7 @@ export const baseApi = createApi({
     'About',
     'ProductType',
     'ServiceType',
+    'RecommendedType',
     'SubscriptionPlan',
     'Support',
     'Dashboard',

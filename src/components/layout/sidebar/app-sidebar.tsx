@@ -2,20 +2,21 @@
 
 import { usePathname } from 'next/navigation';
 import {
-  Settings,
   LayoutDashboard,
-  UserRound,
-  SquareLibrary,
+  UserCog,
+  Star,
+  Wrench,
+  Package,
+  Wallet,
+  Crown,
+  Banknote,
+  Gift,
+  Headphones,
+  Settings,
   FileText,
   FileCheck,
-  Shield,
   Info,
-  Crown,
-  DollarSign,
-  Star,
-  Headset,
-  ListTodo,
-  LayoutList,
+  ShieldCheck,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -51,22 +52,27 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {
         title: 'Account Details',
         url: `/admin/account-details`,
-        icon: UserRound,
+        icon: UserCog,
+      },
+      {
+        title: 'Recommended Type',
+        url: `/admin/recommended-type`,
+        icon: Star,
       },
       {
         title: 'Service Type',
         url: `/admin/service-type`,
-        icon: ListTodo,
+        icon: Wrench,
       },
       {
         title: 'Product Type',
         url: `/admin/product-type`,
-        icon: LayoutList,
+        icon: Package,
       },
       {
         title: 'Earning',
         url: `/admin/earning`,
-        icon: SquareLibrary,
+        icon: Wallet,
       },
       {
         title: 'Manage Subscription',
@@ -76,17 +82,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {
         title: 'Payout Manage',
         url: `/admin/payout-manage`,
-        icon: DollarSign,
+        icon: Banknote,
       },
       {
         title: 'Refer and Earn',
         url: `/admin/refer-earn`,
-        icon: Star,
+        icon: Gift,
       },
       {
         title: 'Customer Support',
         url: `/admin/customer-support`,
-        icon: Headset,
+        icon: Headphones,
       },
       {
         title: 'Settings',
@@ -99,7 +105,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             icon: FileText,
           },
           {
-            title: 'Terms of use',
+            title: 'Terms of Use',
             url: '/admin/settings/terms',
             icon: FileCheck,
           },
@@ -111,7 +117,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           {
             title: 'Policy',
             url: '/admin/settings/policy',
-            icon: Shield,
+            icon: ShieldCheck,
           },
         ],
       },
