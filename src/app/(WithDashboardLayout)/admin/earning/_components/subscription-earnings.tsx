@@ -9,15 +9,8 @@ import { useCallback, useEffect, useState } from 'react';
 import ADPagination from '@/components/modules/ADPagination';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
-
-type TSubscriptionEarning = {
-  _id: string;
-  providerName: string;
-  accountType: 'Service Provider' | string;
-  subscriptionType: 'Basic' | 'Advance' | string;
-  amount: number;
-  purchaseDate: string; // ISO date string
-};
+import { useGetAllSubPaymentQuery } from '@/redux/features/payment/paymentApi';
+import { TSubPayment } from '@/types/payment.type';
 
 const SubscriptionEarnings = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -34,106 +27,22 @@ const SubscriptionEarnings = () => {
     initialDate,
   );
 
-  // const page = searchParams.get('page') || 1;
-  // const limit = searchParams.get('limit') || 10;
-  // const searchTerm = searchParams.get('searchTerm') || '';
-  // const createdAt = searchParams.get('createdAt') || '';
+  const page = searchParams.get('page') || 1;
+  const limit = searchParams.get('limit') || 10;
+  const searchTerm = searchParams.get('searchTerm') || '';
+  const createdAt = searchParams.get('createdAt') || '';
 
-  // const { data, isLoading, refetch } = useGetAllUsersQuery({
-  //     page,
-  //     limit,
-  //     query: {
-  //         searchTerm,
-  //         createdAt,
-  //     },
-  // });
+  const { data, isLoading, refetch } = useGetAllSubPaymentQuery({
+    page,
+    limit,
+    query: {
+      searchTerm,
+      createdAt,
+    },
+  });
 
-  // const users = data?.data || [];
-  // const meta = data?.meta || { totalPage: 1 };
-
-  const subscriptionEarnings = [
-    {
-      _id: '6898450e79b2ffe0fb906e21',
-      providerName: 'Netflix',
-      accountType: 'Service Provider',
-      subscriptionType: 'Basic',
-      amount: 15.99,
-      purchaseDate: '2025-08-01',
-    },
-    {
-      _id: '6898450e79b2ffe0fb906e22',
-      providerName: 'Spotify',
-      accountType: 'Service Provider',
-      subscriptionType: 'Advance',
-      amount: 99.99,
-      purchaseDate: '2025-07-10',
-    },
-    {
-      _id: '6898450e79b2ffe0fb906e23',
-      providerName: 'Adobe Creative Cloud',
-      accountType: 'Service Provider',
-      subscriptionType: 'Basic',
-      amount: 52.99,
-      purchaseDate: '2025-06-20',
-    },
-    {
-      _id: '6898450e79b2ffe0fb906e24',
-      providerName: 'Microsoft 365',
-      accountType: 'Service Provider',
-      subscriptionType: 'Advance',
-      amount: 69.99,
-      purchaseDate: '2025-05-15',
-    },
-    {
-      _id: '6898450e79b2ffe0fb906e21',
-      providerName: 'Netflix',
-      accountType: 'Service Provider',
-      subscriptionType: 'Basic',
-      amount: 15.99,
-      purchaseDate: '2025-08-01',
-    },
-    {
-      _id: '6898450e79b2ffe0fb906e22',
-      providerName: 'Spotify',
-      accountType: 'Service Provider',
-      subscriptionType: 'Advance',
-      amount: 99.99,
-      purchaseDate: '2025-07-10',
-    },
-    {
-      _id: '6898450e79b2ffe0fb906e23',
-      providerName: 'Adobe Creative Cloud',
-      accountType: 'Service Provider',
-      subscriptionType: 'Basic',
-      amount: 52.99,
-      purchaseDate: '2025-06-20',
-    },
-    {
-      _id: '6898450e79b2ffe0fb906e24',
-      providerName: 'Microsoft 365',
-      accountType: 'Service Provider',
-      subscriptionType: 'Advance',
-      amount: 69.99,
-      purchaseDate: '2025-05-15',
-    },
-    {
-      _id: '6898450e79b2ffe0fb906e23',
-      providerName: 'Adobe Creative Cloud',
-      accountType: 'Service Provider',
-      subscriptionType: 'Basic',
-      amount: 52.99,
-      purchaseDate: '2025-06-20',
-    },
-    {
-      _id: '6898450e79b2ffe0fb906e24',
-      providerName: 'Microsoft 365',
-      accountType: 'Service Provider',
-      subscriptionType: 'Advance',
-      amount: 69.99,
-      purchaseDate: '2025-05-15',
-    },
-  ];
-  const meta = { totalPage: 1 };
+  const subscriptionEarnings = data?.data || [];
+  const meta = data?.meta || { totalPage: 1 };
 
   // search & createdAt date filtering part
   const updateSearchParams = useCallback(
@@ -175,7 +84,7 @@ const SubscriptionEarnings = () => {
   }, [searchParams]);
 
   // Table columns
-  const columns: ColumnDef<TSubscriptionEarning>[] = [
+  const columns: ColumnDef<TSubPayment>[] = [
     {
       id: 'select',
       header: ({ table }) => (
@@ -209,30 +118,45 @@ const SubscriptionEarnings = () => {
       cell: ({ row }) => String(row.index + 1).padStart(2, '0'),
     },
     {
-      accessorKey: 'providerName',
+      accessorKey: 'vendor',
       header: 'Provider Name',
-      cell: ({ row }) => <span>{row.original.providerName}</span>,
+      cell: ({ row }) => (
+        <div>
+          <p>{row.original.vendor.businessName}</p>
+          <p className="text-sm text-gray-500">{row.original.vendor.email}</p>
+        </div>
+      ),
     },
     {
       accessorKey: 'accountType',
       header: 'Account Type',
-      cell: ({ row }) => <span>{row.original.accountType}</span>,
+      cell: ({ row }) => (
+        <span className="capitalize">
+          {row.original.vendor.chooseOffer} Provider
+        </span>
+      ),
     },
     {
       accessorKey: 'subscriptionType',
       header: 'Subscription Type',
-      cell: ({ row }) => <span>{row.original.subscriptionType}</span>,
+      cell: ({ row }) => (
+        <span className="capitalize">{row.original.user.subscribed}</span>
+      ),
     },
     {
       accessorKey: 'amount',
       header: 'Amount',
-      cell: ({ row }) => <span>${row.original.amount}</span>,
+      cell: ({ row }) => <span>${row.original.amount.toFixed(2)}</span>,
     },
     {
       accessorKey: 'purchaseDate',
       header: 'Purchase Date',
-      cell: ({ row }) =>
-        format(new Date(row.original.purchaseDate), 'dd MMM, yyyy'),
+      cell: ({ row }) => format(new Date(row.original.paidAt), 'dd MMM, yyyy'),
+    },
+    {
+      accessorKey: 'tranId',
+      header: 'Transaction Id',
+      cell: ({ row }) => <span>{row.original.tranId}</span>,
     },
   ];
 

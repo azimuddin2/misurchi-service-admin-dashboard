@@ -2,6 +2,8 @@ export type TRole = 'vendor' | 'user' | 'admin';
 
 export type TStatus = 'ongoing' | 'confirmed' | 'blocked';
 
+export type TSubscribed = 'advance' | 'basic';
+
 export interface IUser {
   firstName: string;
   lastName: string;
@@ -24,6 +26,8 @@ export interface IUser {
     status: boolean;
   };
   _id: string;
+  isSubscribed: boolean;
+  subscribed?: TSubscribed;
   createdAt: string;
   updatedAt: string;
   __v: number;
@@ -47,6 +51,7 @@ export type TVendorUser = {
   description: string;
   createdAt: string;
   updatedAt: string;
+  chooseOffer: string;
   __v: number;
   image?: string;
 };

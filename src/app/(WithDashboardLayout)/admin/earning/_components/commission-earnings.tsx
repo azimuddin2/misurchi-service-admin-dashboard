@@ -9,16 +9,8 @@ import { useCallback, useEffect, useState } from 'react';
 import ADPagination from '@/components/modules/ADPagination';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
-
-type TCommissionEarnings = {
-  _id: string;
-  providerName: string;
-  itemNumber: string;
-  transactionPrice: number;
-  commission: string;
-  offerType: 'Service' | 'Product';
-  transactionDate: string; // ISO date string
-};
+import { useGetAllPaymentCommissionQuery } from '@/redux/features/payment/paymentApi';
+import { TPayment } from '@/types/payment.type';
 
 const CommissionEarnings = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -35,116 +27,22 @@ const CommissionEarnings = () => {
     initialDate,
   );
 
-  // const page = searchParams.get('page') || 1;
-  // const limit = searchParams.get('limit') || 10;
-  // const searchTerm = searchParams.get('searchTerm') || '';
-  // const createdAt = searchParams.get('createdAt') || '';
+  const page = searchParams.get('page') || 1;
+  const limit = searchParams.get('limit') || 10;
+  const searchTerm = searchParams.get('searchTerm') || '';
+  const createdAt = searchParams.get('createdAt') || '';
 
-  // const { data, isLoading, refetch } = useGetAllUsersQuery({
-  //     page,
-  //     limit,
-  //     query: {
-  //         searchTerm,
-  //         createdAt,
-  //     },
-  // });
+  const { data, isLoading, refetch } = useGetAllPaymentCommissionQuery({
+    page,
+    limit,
+    query: {
+      searchTerm,
+      createdAt,
+    },
+  });
 
-  // const users = data?.data || [];
-  // const meta = data?.meta || { totalPage: 1 };
-
-  const commissionEarnings: TCommissionEarnings[] = [
-    {
-      _id: '1',
-      providerName: 'Netflix',
-      itemNumber: 'NF-2025-001',
-      transactionPrice: 15.99,
-      commission: '10%',
-      offerType: 'Service',
-      transactionDate: '2025-08-01',
-    },
-    {
-      _id: '2',
-      providerName: 'Spotify',
-      itemNumber: 'SP-2025-002',
-      transactionPrice: 99.99,
-      commission: '12%',
-      offerType: 'Product',
-      transactionDate: '2025-07-15',
-    },
-    {
-      _id: '3',
-      providerName: 'Adobe Creative Cloud',
-      itemNumber: 'AD-2025-003',
-      transactionPrice: 52.99,
-      commission: '15%',
-      offerType: 'Service',
-      transactionDate: '2025-07-10',
-    },
-    {
-      _id: '4',
-      providerName: 'Microsoft 365',
-      itemNumber: 'MS-2025-004',
-      transactionPrice: 69.99,
-      commission: '8%',
-      offerType: 'Service',
-      transactionDate: '2025-06-28',
-    },
-    {
-      _id: '5',
-      providerName: 'Amazon',
-      itemNumber: 'AMZ-2025-005',
-      transactionPrice: 120.0,
-      commission: '5%',
-      offerType: 'Product',
-      transactionDate: '2025-06-15',
-    },
-    {
-      _id: '6',
-      providerName: 'eBay',
-      itemNumber: 'EBY-2025-006',
-      transactionPrice: 45.5,
-      commission: '7%',
-      offerType: 'Service',
-      transactionDate: '2025-06-10',
-    },
-    {
-      _id: '7',
-      providerName: 'Shopify',
-      itemNumber: 'SHP-2025-007',
-      transactionPrice: 200.0,
-      commission: '10%',
-      offerType: 'Product',
-      transactionDate: '2025-05-25',
-    },
-    {
-      _id: '8',
-      providerName: 'Udemy',
-      itemNumber: 'UDM-2025-008',
-      transactionPrice: 19.99,
-      commission: '20%',
-      offerType: 'Service',
-      transactionDate: '2025-05-12',
-    },
-    {
-      _id: '9',
-      providerName: 'Apple',
-      itemNumber: 'APL-2025-009',
-      transactionPrice: 999.0,
-      commission: '6%',
-      offerType: 'Product',
-      transactionDate: '2025-04-30',
-    },
-    {
-      _id: '10',
-      providerName: 'Google Cloud',
-      itemNumber: 'GCP-2025-010',
-      transactionPrice: 250.0,
-      commission: '18%',
-      offerType: 'Service',
-      transactionDate: '2025-04-20',
-    },
-  ];
-  const meta = { totalPage: 1 };
+  const commissionEarnings = data?.data || [];
+  const meta = data?.meta || { totalPage: 1 };
 
   // search & createdAt date filtering part
   const updateSearchParams = useCallback(
@@ -186,7 +84,7 @@ const CommissionEarnings = () => {
   }, [searchParams]);
 
   // Table columns
-  const columns: ColumnDef<TCommissionEarnings>[] = [
+  const columns: ColumnDef<TPayment>[] = [
     {
       id: 'select',
       header: ({ table }) => (
@@ -220,35 +118,59 @@ const CommissionEarnings = () => {
       cell: ({ row }) => String(row.index + 1).padStart(2, '0'),
     },
     {
-      accessorKey: 'providerName',
+      accessorKey: 'vendor',
       header: 'Provider Name',
-      cell: ({ row }) => <span>{row.original.providerName}</span>,
+      cell: ({ row }) => (
+        <div>
+          <p>{row.original.vendor.businessName}</p>
+          <p className="text-gray-500 text-sm">{row.original.vendor.email}</p>
+        </div>
+      ),
     },
     {
-      accessorKey: 'itemNumber',
+      accessorKey: 'reference',
       header: 'Item Number',
-      cell: ({ row }) => <span>{row.original.itemNumber}</span>,
+      cell: ({ row }) => {
+        const ref = row.original.reference as any;
+        const refId = ref?.bookingId || ref?.orderId || '-';
+        return (
+          <div className="flex items-start gap-3">
+            <p className="font-medium text-gray-900">{refId}</p>
+          </div>
+        );
+      },
     },
     {
       accessorKey: 'transactionPrice',
       header: 'Transaction Price',
-      cell: ({ row }) => <span>${row.original.transactionPrice}</span>,
+      cell: ({ row }) => <span>${row.original.price.toFixed(2)}</span>,
     },
     {
       accessorKey: 'commission',
-      header: 'Commission %',
-      cell: ({ row }) => <span>{row.original.commission}</span>,
+      header: 'Commission',
+      cell: ({ row }) => <span>${row.original.adminAmount.toFixed(2)}</span>,
     },
     {
       accessorKey: 'offerType',
       header: 'Offer Type',
-      cell: ({ row }) => <span>{row.original.offerType}</span>,
+      cell: ({ row }) => {
+        const modelType = row.original.modelType;
+        return (
+          <span>
+            {modelType === 'Order'
+              ? 'Product'
+              : modelType === 'Booking'
+                ? 'Service'
+                : '-'}
+          </span>
+        );
+      },
     },
     {
       accessorKey: 'transactionDate',
       header: 'Transaction Date',
       cell: ({ row }) =>
-        format(new Date(row.original.transactionDate), 'dd MMM, yyyy'),
+        format(new Date(row.original.createdAt), 'dd MMM, yyyy'),
     },
   ];
 

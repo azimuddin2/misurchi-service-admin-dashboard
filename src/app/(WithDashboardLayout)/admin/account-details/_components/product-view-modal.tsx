@@ -12,8 +12,8 @@ import { TProduct } from '@/types/product.type';
 import Image from 'next/image';
 import StarRatings from 'react-star-ratings';
 import { useEffect, useState } from 'react';
-import { TReview } from '@/types/review.type';
 import { Progress } from '@/components/ui/progress';
+import { TReview } from '@/types/review.type';
 
 interface ProductModalProps {
   selectedProduct: TProduct | null;
