@@ -277,7 +277,7 @@ const ReferEarn = () => {
         />
       </div>
 
-      <div>
+      <div className="h-[700px]">
         <ADTable columns={columns} data={payouts || []} />
       </div>
       <ADPagination totalPage={meta?.totalPage} />

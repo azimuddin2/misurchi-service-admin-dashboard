@@ -193,7 +193,7 @@ const SubscriptionEarnings = () => {
         />
       </div>
 
-      <div>
+      <div className="h-[700px]">
         <ADTable columns={columns} data={subscriptionEarnings || []} />
       </div>
       <ADPagination totalPage={meta?.totalPage} />

@@ -53,6 +53,15 @@ const vendorApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Vendor'],
     }),
+
+    getVendorSummary: builder.query<TResponse<any>, { id: string }>({
+      query: ({ id }) => ({
+        url: `/vendors/summary-data/${id}`,
+        method: 'GET',
+        credentials: 'include',
+      }),
+      providesTags: ['Vendor'],
+    }),
   }),
 });
 
@@ -60,4 +69,5 @@ export const {
   useGetAllVendorUserQuery,
   useGetVendorProfileQuery,
   useUpdateVendorProfileMutation,
+  useGetVendorSummaryQuery,
 } = vendorApi;

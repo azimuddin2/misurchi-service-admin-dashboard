@@ -306,7 +306,9 @@ const AccountDetails = () => {
         />
       </div>
 
-      <ADTable columns={columns} data={users || []} />
+      <div className="h-[700px]">
+        <ADTable columns={columns} data={users || []} />
+      </div>
       <ADPagination totalPage={meta?.totalPage} />
 
       {/* Single User Modal */}

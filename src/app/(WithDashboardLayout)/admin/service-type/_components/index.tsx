@@ -266,7 +266,7 @@ const ServiceType = () => {
       </div>
 
       {/* 📊 Table & Pagination */}
-      <div className="h-full">
+      <div className="h-[700px]">
         <ADTable columns={columns} data={serviceType || []} />
       </div>
 

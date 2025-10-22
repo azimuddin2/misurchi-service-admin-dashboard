@@ -8,22 +8,40 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Products from './products';
 import Services from './services';
-import { useGetVendorProfileQuery } from '@/redux/features/vendor/vendorApi';
+import {
+  useGetVendorProfileQuery,
+  useGetVendorSummaryQuery,
+} from '@/redux/features/vendor/vendorApi';
+import Spinner from '@/components/shared/Spinner';
 
 type Props = {
   email: string;
 };
 
 const VendorViewAccount = ({ email }: Props) => {
-  const { data } = useGetUserProfileQuery(email);
+  const { data, isLoading } = useGetUserProfileQuery(email);
   const user: IUser | undefined = data?.data;
 
-  const { data: vendorData } = useGetVendorProfileQuery(user?.email as string);
-  const vendorId = vendorData?.data?._id as string;
+  const { data: vendorData, isLoading: vendorDataIsLoading } =
+    useGetVendorProfileQuery(user?.email as string);
+  const vendor = vendorData?.data;
 
-  const joinDate = user?.createdAt
-    ? format(new Date(user.createdAt), 'dd MMM, yyyy')
+  const vendorId = vendor?._id as string;
+
+  const { data: vendorSummary, isLoading: vendorSummaryIsLoading } =
+    useGetVendorSummaryQuery({ id: vendorId });
+
+  const totalProducts = vendorSummary?.data.totalProducts;
+  const totalServices = vendorSummary?.data.totalServices;
+  const totalEarnings = vendorSummary?.data.totalEarnings;
+
+  const joinDate = vendor?.createdAt
+    ? format(new Date(vendor.createdAt), 'dd MMM, yyyy')
     : '';
+
+  if (isLoading || vendorDataIsLoading || vendorSummaryIsLoading) {
+    return <Spinner />;
+  }
 
   return (
     <div className="lg:flex">
@@ -34,7 +52,7 @@ const VendorViewAccount = ({ email }: Props) => {
             <Avatar className="mx-auto w-28 h-28">
               <AvatarImage src={user?.image} />
               <AvatarFallback className="bg-[#165940] text-white text-5xl capitalize">
-                {user?.fullName?.slice(0, 1)}
+                {vendor?.businessName?.slice(0, 1)}
               </AvatarFallback>
             </Avatar>
           </div>
@@ -45,7 +63,7 @@ const VendorViewAccount = ({ email }: Props) => {
             <div className="flex justify-between items-center px-4 py-4 bg-[#EBF0EE]">
               <span className="text-[#212529] font-medium">Name</span>
               <span className="text-[#212529] font-semibold">
-                {user?.fullName}
+                {vendor?.businessName}
               </span>
             </div>
 
@@ -53,7 +71,7 @@ const VendorViewAccount = ({ email }: Props) => {
             <div className="flex justify-between items-center px-4 py-4">
               <span className="text-[#212529] font-medium">Email</span>
               <span className="text-[#212529] font-semibold">
-                {user?.email}
+                {vendor?.email}
               </span>
             </div>
 
@@ -61,7 +79,7 @@ const VendorViewAccount = ({ email }: Props) => {
             <div className="flex justify-between items-center px-4 py-4 bg-[#EBF0EE]">
               <span className="text-[#212529] font-medium">Phone Number</span>
               <span className="text-[#212529] font-semibold">
-                {user?.phone}
+                {vendor?.phone}
               </span>
             </div>
 
@@ -74,14 +92,16 @@ const VendorViewAccount = ({ email }: Props) => {
             {/* Location */}
             <div className="flex justify-between items-center px-4 py-4 bg-[#EBF0EE]">
               <span className="text-[#212529] font-medium">Location</span>
-              <span className="text-[#212529] font-semibold">Ontario, USA</span>
+              <span className="text-[#212529] font-semibold">
+                {vendor?.country}
+              </span>
             </div>
 
             {/* Account Type */}
             <div className="flex justify-between items-center px-4 py-4">
               <span className="text-[#212529] font-medium">Account Type</span>
               <span className="text-[#212529] font-semibold capitalize">
-                {user?.role === 'vendor' ? 'Service Provider' : user?.role}
+                {vendor?.chooseOffer} Provider
               </span>
             </div>
 
@@ -90,25 +110,37 @@ const VendorViewAccount = ({ email }: Props) => {
               <span className="text-[#212529] font-medium">
                 Subscription Plan
               </span>
-              <span className="text-[#212529] font-semibold">Basic</span>
+              {user?.subscribed ? (
+                <span className="text-[#212529] font-semibold capitalize">
+                  {user?.subscribed}
+                </span>
+              ) : (
+                <span className="text-[#212529] font-semibold capitalize">
+                  Basic
+                </span>
+              )}
             </div>
 
             {/* Total Products */}
             <div className="flex justify-between items-center px-4 py-4">
               <span className="text-[#212529] font-medium">Total Products</span>
-              <span className="text-[#212529] font-bold">{21}</span>
+              <span className="text-[#212529] font-bold">{totalProducts}</span>
             </div>
 
             {/* Total Service */}
             <div className="flex justify-between items-center px-4 py-4 bg-[#EBF0EE]">
               <span className="text-[#212529] font-medium">Total Service</span>
-              <span className="text-[#212529] font-semibold">{16}</span>
+              <span className="text-[#212529] font-semibold">
+                {totalServices}
+              </span>
             </div>
 
             {/* Total Earning */}
             <div className="flex justify-between items-center px-4 py-4">
               <span className="text-[#212529] font-medium">Total Earning</span>
-              <span className="text-[#212529] font-semibold">$2000.00</span>
+              <span className="text-[#212529] font-semibold">
+                ${totalEarnings?.toFixed(2)}
+              </span>
             </div>
           </div>
         </Card>

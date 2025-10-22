@@ -207,7 +207,10 @@ const CommissionEarnings = () => {
         />
       </div>
 
-      <ADTable columns={columns} data={commissionEarnings || []} />
+      <div className="h-[700px]">
+        <ADTable columns={columns} data={commissionEarnings || []} />
+      </div>
+
       <ADPagination totalPage={meta?.totalPage} />
     </div>
   );

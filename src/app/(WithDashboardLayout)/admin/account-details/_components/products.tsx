@@ -28,7 +28,6 @@ type Props = {
 };
 
 const Products = ({ vendorId }: Props) => {
-  const user = useAppSelector(selectCurrentUser);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -231,7 +230,9 @@ const Products = ({ vendorId }: Props) => {
       </div>
 
       {/* Table & Pagination */}
-      <ADTable columns={columns} data={products || []} />
+      <div className="h-[700px]">
+        <ADTable columns={columns} data={products || []} />
+      </div>
       <ADPagination totalPage={meta?.totalPage} />
 
       {/* Single Product Modal */}
