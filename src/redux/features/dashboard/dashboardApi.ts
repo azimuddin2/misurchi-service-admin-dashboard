@@ -4,7 +4,7 @@ import { TAdminDashboardStats } from '@/types/dashboard.type';
 
 const dashboardApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getAdminDashboardStats: builder.query<TResponse<TAdminDashboardStats>, {}>({
+    getAdminDashboardStats: builder.query<TResponse<TAdminDashboardStats>, any>({
       query: () => ({
         url: `/dashboard/admin-stats`,
         method: 'GET',
