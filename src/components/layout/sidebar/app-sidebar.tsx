@@ -10,13 +10,13 @@ import {
   Wallet,
   Crown,
   Banknote,
-  Gift,
   Headphones,
   Settings,
   FileText,
   FileCheck,
   Info,
   ShieldCheck,
+  UserPen,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -84,15 +84,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: `/admin/payout-manage`,
         icon: Banknote,
       },
-      {
-        title: 'Refer and Earn',
-        url: `/admin/refer-earn`,
-        icon: Gift,
-      },
+      // {
+      //   title: 'Refer and Earn',
+      //   url: `/admin/refer-earn`,
+      //   icon: Gift,
+      // },
       {
         title: 'Customer Support',
         url: `/admin/customer-support`,
         icon: Headphones,
+      },
+      {
+        title: 'Edit Profile',
+        url: `/admin/profile`,
+        icon: UserPen,
       },
       {
         title: 'Settings',

@@ -4,14 +4,16 @@ import { TAdminDashboardStats } from '@/types/dashboard.type';
 
 const dashboardApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getAdminDashboardStats: builder.query<TResponse<TAdminDashboardStats>, any>({
-      query: () => ({
-        url: `/dashboard/admin-stats`,
-        method: 'GET',
-        credentials: 'include',
-      }),
-      providesTags: ['Dashboard'],
-    }),
+    getAdminDashboardStats: builder.query<TResponse<TAdminDashboardStats>, any>(
+      {
+        query: () => ({
+          url: `/dashboard/admin-stats`,
+          method: 'GET',
+          credentials: 'include',
+        }),
+        providesTags: ['Dashboard'],
+      },
+    ),
 
     getAdminUserOverviewChart: builder.query<TResponse<any>, { year?: number }>(
       {

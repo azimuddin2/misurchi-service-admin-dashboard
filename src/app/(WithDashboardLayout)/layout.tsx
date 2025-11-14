@@ -16,7 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { logout, selectCurrentUser } from '@/redux/features/auth/authSlice';
 import Link from 'next/link';
-import { Bell, LogOut, User } from 'lucide-react';
+import { Bell, LogOut, UserPen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
@@ -79,8 +79,8 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                   </div>
                   <Link href={`/${user?.role}/profile`}>
                     <DropdownMenuItem className="rounded-[5px] cursor-pointe bg-[#EBF0EE]">
-                      <User />
-                      <span>Profile</span>
+                      <UserPen />
+                      <span>Edit Profile</span>
                     </DropdownMenuItem>
                   </Link>
                   <DropdownMenuItem

@@ -11,6 +11,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { useGetAllSubPaymentQuery } from '@/redux/features/payment/paymentApi';
 import { TSubPayment } from '@/types/payment.type';
+import Spinner from '@/components/shared/Spinner';
 
 const SubscriptionEarnings = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -32,7 +33,7 @@ const SubscriptionEarnings = () => {
   const searchTerm = searchParams.get('searchTerm') || '';
   const createdAt = searchParams.get('createdAt') || '';
 
-  const { data, isLoading, refetch } = useGetAllSubPaymentQuery({
+  const { data, isLoading } = useGetAllSubPaymentQuery({
     page,
     limit,
     query: {
@@ -122,8 +123,8 @@ const SubscriptionEarnings = () => {
       header: 'Provider Name',
       cell: ({ row }) => (
         <div>
-          <p>{row.original.vendor.businessName}</p>
-          <p className="text-sm text-gray-500">{row.original.vendor.email}</p>
+          <p>{row.original?.vendor?.businessName}</p>
+          <p className="text-sm text-gray-500">{row.original?.vendor?.email}</p>
         </div>
       ),
     },
@@ -132,7 +133,7 @@ const SubscriptionEarnings = () => {
       header: 'Account Type',
       cell: ({ row }) => (
         <span className="capitalize">
-          {row.original.vendor.chooseOffer} Provider
+          {row.original.vendor?.chooseOffer} Provider
         </span>
       ),
     },
@@ -151,7 +152,8 @@ const SubscriptionEarnings = () => {
     {
       accessorKey: 'purchaseDate',
       header: 'Purchase Date',
-      cell: ({ row }) => format(new Date(row.original.paidAt), 'dd MMM, yyyy'),
+      cell: ({ row }) =>
+        format(new Date(row.original.createdAt), 'dd MMM, yyyy'),
     },
     {
       accessorKey: 'tranId',
@@ -159,6 +161,10 @@ const SubscriptionEarnings = () => {
       cell: ({ row }) => <span>{row.original.tranId}</span>,
     },
   ];
+
+  if (isLoading) {
+    <Spinner />;
+  }
 
   return (
     <div className="">

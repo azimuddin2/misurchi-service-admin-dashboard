@@ -11,6 +11,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { useGetAllPaymentCommissionQuery } from '@/redux/features/payment/paymentApi';
 import { TPayment } from '@/types/payment.type';
+import Spinner from '@/components/shared/Spinner';
 
 const CommissionEarnings = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -32,7 +33,7 @@ const CommissionEarnings = () => {
   const searchTerm = searchParams.get('searchTerm') || '';
   const createdAt = searchParams.get('createdAt') || '';
 
-  const { data, isLoading, refetch } = useGetAllPaymentCommissionQuery({
+  const { data, isLoading } = useGetAllPaymentCommissionQuery({
     page,
     limit,
     query: {
@@ -173,6 +174,10 @@ const CommissionEarnings = () => {
         format(new Date(row.original.createdAt), 'dd MMM, yyyy'),
     },
   ];
+
+  if (isLoading) {
+    <Spinner />;
+  }
 
   return (
     <div>
