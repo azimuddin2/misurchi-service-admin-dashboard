@@ -37,7 +37,7 @@ const AddSubscription = () => {
     resolver: zodResolver(createPlanValidationSchema),
     defaultValues: {
       name: '',
-      cost: 0,
+      cost: undefined,
       description: '',
       features: {
         teamMembers: false,
@@ -46,12 +46,12 @@ const AddSubscription = () => {
         grantPermissionAccess: false,
       },
       limits: {
-        serviceMax: 0,
-        productMax: 0,
-        highlightOfferMax: 0,
-        transactionFee: 0,
+        serviceMax: undefined,
+        productMax: undefined,
+        highlightOfferMax: undefined,
+        transactionFee: undefined,
       },
-      validity: '1month', // ✅ now TypeScript knows this is a valid TValidityType
+      validity: '1month',
     },
   });
 
@@ -97,6 +97,7 @@ const AddSubscription = () => {
           <div>
             <h3 className="text-xl font-medium mb-4">Plan Information</h3>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* NAME */}
               <FormField
                 control={form.control}
                 name="name"
@@ -117,6 +118,8 @@ const AddSubscription = () => {
                   </FormItem>
                 )}
               />
+
+              {/* COST */}
               <FormField
                 control={form.control}
                 name="cost"
@@ -127,8 +130,17 @@ const AddSubscription = () => {
                       <Input
                         type="number"
                         {...field}
-                        value={field.value || 0}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        value={field.value === undefined ? '' : field.value}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value === ''
+                              ? undefined
+                              : Number(e.target.value),
+                          )
+                        }
+                        onFocus={() => {
+                          if (field.value === 0) field.onChange(undefined);
+                        }}
                         className="bg-[#f5f5f5] py-6 border rounded-sm"
                       />
                     </FormControl>
@@ -137,7 +149,8 @@ const AddSubscription = () => {
                 )}
               />
             </div>
-            {/* Description */}
+
+            {/* DESCRIPTION */}
             <FormField
               control={form.control}
               name="description"
@@ -178,12 +191,12 @@ const AddSubscription = () => {
                         <Switch
                           checked={field.value}
                           onCheckedChange={field.onChange}
-                          className={`
-            data-[state=checked]:bg-gradient-to-t 
-            data-[state=checked]:from-green-600/70 
-            data-[state=checked]:to-green-800
-            data-[state=unchecked]:bg-gray-300
-          `}
+                          className="
+                            data-[state=checked]:bg-gradient-to-t 
+                            data-[state=checked]:from-green-600/70 
+                            data-[state=checked]:to-green-800
+                            data-[state=unchecked]:bg-gray-300
+                          "
                         />
                       </FormControl>
                     </FormItem>
@@ -216,10 +229,17 @@ const AddSubscription = () => {
                         <Input
                           type="number"
                           {...field}
-                          value={field.value || 0}
+                          value={field.value === undefined ? '' : field.value}
                           onChange={(e) =>
-                            field.onChange(Number(e.target.value))
+                            field.onChange(
+                              e.target.value === ''
+                                ? undefined
+                                : Number(e.target.value),
+                            )
                           }
+                          onFocus={() => {
+                            if (field.value === 0) field.onChange(undefined);
+                          }}
                           className="bg-[#f5f5f5] py-6 border rounded-sm"
                         />
                       </FormControl>

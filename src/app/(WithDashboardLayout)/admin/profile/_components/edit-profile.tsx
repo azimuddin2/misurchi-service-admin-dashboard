@@ -15,7 +15,7 @@ import { AppButton } from '@/components/shared/app-button';
 import { toast } from 'sonner';
 import { PhoneInput } from '@/components/shared/phone-input';
 import { IUser } from '@/types';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useUpdateUserProfileMutation } from '@/redux/features/user/userApi';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { updateProfileSchema } from './profile.validation';
@@ -28,6 +28,7 @@ type Props = {
 
 const EditProfile = ({ userData, imageFile, refetch }: Props) => {
   const [updateUserProfile] = useUpdateUserProfileMutation();
+  const [imagePreview, setImagePreview] = useState<string[] | []>([]);
 
   const form = useForm({
     resolver: zodResolver(updateProfileSchema),
@@ -48,6 +49,7 @@ const EditProfile = ({ userData, imageFile, refetch }: Props) => {
         email: userData.email || '',
         phone: userData.phone || '',
       });
+      setImagePreview(userData.image ? [userData.image] : []);
     }
   }, [userData, form]);
 

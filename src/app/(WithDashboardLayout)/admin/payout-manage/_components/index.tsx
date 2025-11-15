@@ -9,21 +9,9 @@ import { useCallback, useEffect, useState } from 'react';
 import ADPagination from '@/components/modules/ADPagination';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-
-type TPayout = {
-  _id: string;
-  name: string;
-  availableBalance: string;
-  method: string;
-  requestDate: string;
-  status: 'Pending' | 'Reject' | 'Paid';
-};
+import { useGetAllPaymentCommissionQuery } from '@/redux/features/payment/paymentApi';
+import { TPayment } from '@/types/payment.type';
+import Spinner from '@/components/shared/Spinner';
 
 const PayoutManage = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -40,106 +28,22 @@ const PayoutManage = () => {
     initialDate,
   );
 
-  // const page = searchParams.get('page') || 1;
-  // const limit = searchParams.get('limit') || 10;
-  // const searchTerm = searchParams.get('searchTerm') || '';
-  // const createdAt = searchParams.get('createdAt') || '';
+  const page = searchParams.get('page') || 1;
+  const limit = searchParams.get('limit') || 10;
+  const searchTerm = searchParams.get('searchTerm') || '';
+  const createdAt = searchParams.get('createdAt') || '';
 
-  // const { data, isLoading, refetch } = useGetAllUsersQuery({
-  //     page,
-  //     limit,
-  //     query: {
-  //         searchTerm,
-  //         createdAt,
-  //     },
-  // });
+  const { data, isLoading } = useGetAllPaymentCommissionQuery({
+    page,
+    limit,
+    query: {
+      searchTerm,
+      createdAt,
+    },
+  });
 
-  // const users = data?.data || [];
-  // const meta = data?.meta || { totalPage: 1 };
-
-  const payouts: TPayout[] = [
-    {
-      _id: '1',
-      name: 'Azim Uddin',
-      availableBalance: '120.50',
-      method: 'PayPal',
-      requestDate: '2025-08-01',
-      status: 'Pending',
-    },
-    {
-      _id: '2',
-      name: 'John Doe',
-      availableBalance: '450.00',
-      method: 'Bank Transfer',
-      requestDate: '2025-07-30',
-      status: 'Paid',
-    },
-    {
-      _id: '3',
-      name: 'Emily Smith',
-      availableBalance: '75.20',
-      method: 'Payoneer',
-      requestDate: '2025-07-28',
-      status: 'Reject',
-    },
-    {
-      _id: '4',
-      name: 'Michael Brown',
-      availableBalance: '600.75',
-      method: 'PayPal',
-      requestDate: '2025-07-25',
-      status: 'Paid',
-    },
-    {
-      _id: '5',
-      name: 'Sophia Johnson',
-      availableBalance: '250.00',
-      method: 'Stripe',
-      requestDate: '2025-07-20',
-      status: 'Pending',
-    },
-    {
-      _id: '6',
-      name: 'David Wilson',
-      availableBalance: '900.10',
-      method: 'Bank Transfer',
-      requestDate: '2025-07-18',
-      status: 'Reject',
-    },
-    {
-      _id: '7',
-      name: 'Olivia Martinez',
-      availableBalance: '150.40',
-      method: 'Payoneer',
-      requestDate: '2025-07-15',
-      status: 'Pending',
-    },
-    {
-      _id: '8',
-      name: 'Liam Anderson',
-      availableBalance: '300.00',
-      method: 'Stripe',
-      requestDate: '2025-07-12',
-      status: 'Paid',
-    },
-    {
-      _id: '9',
-      name: 'Emma Davis',
-      availableBalance: '720.30',
-      method: 'PayPal',
-      requestDate: '2025-07-10',
-      status: 'Reject',
-    },
-    {
-      _id: '10',
-      name: 'Daniel Thomas',
-      availableBalance: '50.00',
-      method: 'Bank Transfer',
-      requestDate: '2025-07-05',
-      status: 'Pending',
-    },
-  ];
-  const meta = { totalPage: 1 };
+  const commissionEarnings = data?.data || [];
+  const meta = data?.meta || { totalPage: 1 };
 
   // search & createdAt date filtering part
   const updateSearchParams = useCallback(
@@ -181,7 +85,7 @@ const PayoutManage = () => {
   }, [searchParams]);
 
   // Table columns
-  const columns: ColumnDef<TPayout>[] = [
+  const columns: ColumnDef<TPayment>[] = [
     {
       id: 'select',
       header: ({ table }) => (
@@ -215,66 +119,72 @@ const PayoutManage = () => {
       cell: ({ row }) => String(row.index + 1).padStart(2, '0'),
     },
     {
-      accessorKey: 'name',
-      header: 'Name',
-      cell: ({ row }) => <span>{row.original.name}</span>,
+      accessorKey: 'vendor',
+      header: 'Provider Name',
+      cell: ({ row }) => (
+        <div>
+          <p>{row.original.vendor.businessName}</p>
+          <p className="text-gray-500 text-sm">{row.original.vendor.email}</p>
+        </div>
+      ),
     },
     {
-      accessorKey: 'availableBalance',
-      header: 'Available Balance',
-      cell: ({ row }) => <span>${row.original.availableBalance}</span>,
-    },
-    {
-      accessorKey: 'method',
-      header: 'Method',
-      cell: ({ row }) => <span>{row.original.method}</span>,
-    },
-    {
-      accessorKey: 'requestDate',
-      header: 'Request Date',
-      cell: ({ row }) =>
-        format(new Date(row.original.requestDate), 'dd MMM, yyyy'),
-    },
-    {
-      accessorKey: 'status',
-      header: 'Status',
+      accessorKey: 'reference',
+      header: 'Item Number',
       cell: ({ row }) => {
-        const status = row.original.status;
-        let statusColor = 'text-gray-600 bg-gray-100'; // default
-
-        if (status === 'Pending') statusColor = 'text-yellow-600 bg-yellow-100';
-        if (status === 'Paid') statusColor = 'text-green-600 bg-green-100';
-        if (status === 'Reject') statusColor = 'text-red-600 bg-red-100';
-
+        const ref = row.original.reference as any;
+        const refId = ref?.bookingId || ref?.orderId || '-';
         return (
-          <span
-            className={`px-3 py-1 rounded-full text-sm font-medium ${statusColor}`}
-          >
-            {status}
+          <div className="flex items-start gap-3">
+            <p className="font-medium text-gray-900">{refId}</p>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: 'transactionPrice',
+      header: 'Transaction Price',
+      cell: ({ row }) => <span>${row.original.price.toFixed(2)}</span>,
+    },
+    {
+      accessorKey: 'commission',
+      header: 'Commission',
+      cell: ({ row }) => <span>${row.original.adminAmount.toFixed(2)}</span>,
+    },
+    {
+      accessorKey: 'offerType',
+      header: 'Offer Type',
+      cell: ({ row }) => {
+        const modelType = row.original.modelType;
+        return (
+          <span>
+            {modelType === 'Order'
+              ? 'Product'
+              : modelType === 'Booking'
+                ? 'Service'
+                : '-'}
           </span>
         );
       },
     },
     {
-      accessorKey: 'action',
-      header: 'Action',
+      accessorKey: 'status',
+      header: 'Status',
       cell: ({ row }) => (
-        <div className="flex items-center space-x-3">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <Eye
-                  size={22}
-                  className="text-[#78C0A8] cursor-pointer hover:text-[#165940]"
-                />
-              </TooltipTrigger>
-              <TooltipContent>View</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
+        <span className="capitalize">{row.original.status}</span>
       ),
     },
+    {
+      accessorKey: 'transactionDate',
+      header: 'Transaction Date',
+      cell: ({ row }) =>
+        format(new Date(row.original.createdAt), 'dd MMM, yyyy'),
+    },
   ];
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
     <div>
@@ -310,7 +220,7 @@ const PayoutManage = () => {
       </div>
 
       <div className="h-[700px]">
-        <ADTable columns={columns} data={payouts || []} />
+        <ADTable columns={columns} data={commissionEarnings || []} />
       </div>
       <ADPagination totalPage={meta?.totalPage} />
     </div>
