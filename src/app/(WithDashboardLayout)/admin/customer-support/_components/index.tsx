@@ -1,7 +1,7 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { Eye, Search } from 'lucide-react';
+import { Eye, MessageCircleReply, Search } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { format, parseISO } from 'date-fns';
 import { ADTable } from '@/components/modules/ADTable';
@@ -153,6 +153,26 @@ const CustomerSupport = () => {
         format(new Date(row.original.createdAt), 'dd MMM, yyyy'),
     },
     {
+      accessorKey: 'status',
+      header: 'Status',
+      cell: ({ row }) => {
+        const statusColor: Record<string, string> = {
+          Pending: 'text-yellow-500',
+          Reviewed: 'text-blue-500',
+          'In Progress': 'text-orange-500',
+          Resolved: 'text-green-600',
+        };
+        const status = row.original.status;
+        return (
+          <span
+            className={`text-sm font-semibold ${statusColor[status] ?? 'text-gray-500'}`}
+          >
+            {status}
+          </span>
+        );
+      },
+    },
+    {
       accessorKey: 'action',
       header: 'Action',
       cell: ({ row }) => (
@@ -160,7 +180,7 @@ const CustomerSupport = () => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <Eye
+                <MessageCircleReply
                   onClick={() => {
                     setUpdateData(row.original); // save selected row data
                     setUpdateModalOpen(true); // open update modal
@@ -169,7 +189,7 @@ const CustomerSupport = () => {
                   className="text-[#78C0A8] cursor-pointer hover:text-[#165940]"
                 />
               </TooltipTrigger>
-              <TooltipContent>View</TooltipContent>
+              <TooltipContent>Reply</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
