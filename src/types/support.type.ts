@@ -3,6 +3,7 @@ export type TSupport = {
   firstName: string;
   lastName: string;
   email: string;
+  status: string;
   message: string;
   messageReply?: string;
   follow: string;

@@ -15,6 +15,13 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
@@ -31,9 +38,18 @@ interface SupportReplyModalProps {
   supportData: TSupport | null;
 }
 
-// ✅ Validation schema
+const STATUS_OPTIONS = [
+  'Pending',
+  'Reviewed',
+  'In Progress',
+  'Resolved',
+] as const;
+
 const supportMessageSchema = z.object({
   messageReply: z.string().min(1, 'Reply message is required'),
+  status: z.enum(['Pending', 'Reviewed', 'In Progress', 'Resolved'], {
+    required_error: 'Status is required',
+  }),
 });
 
 type FormValues = z.infer<typeof supportMessageSchema>;
@@ -50,6 +66,7 @@ const SupportReplyModal = ({
     resolver: zodResolver(supportMessageSchema),
     defaultValues: {
       messageReply: '',
+      status: 'Pending',
     },
   });
 
@@ -95,34 +112,68 @@ const SupportReplyModal = ({
             onSubmit={form.handleSubmit(onSubmit)}
             className="mt-4 space-y-4"
           >
+            {/* User Info */}
             <div>
               <div className="flex items-center">
-                <div className=" w-1/2">
+                <div className="w-1/2">
                   <h2 className="text-base text-gray-500">First Name</h2>
                   <p>{supportData?.firstName}</p>
                 </div>
-                <div className=" w-1/2">
+                <div className="w-1/2">
                   <h2 className="text-base text-gray-500">Last Name</h2>
                   <p>{supportData?.lastName}</p>
                 </div>
               </div>
               <p className="mt-3">
-                <span className="text-base text-gray-500">Email Address</span>{' '}
+                <span className="text-base text-gray-500">Email Address</span>
                 <br />
                 <span>{supportData?.email}</span>
               </p>
               <p className="mt-3">
-                <span className="text-base text-gray-500">Message</span> <br />
+                <span className="text-base text-gray-500">Message</span>
+                <br />
                 <span className="text-sm">{supportData?.message}</span>
               </p>
             </div>
 
+            {/* Status Field */}
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="!text-gray-700 !text-sm font-medium">
+                    Status
+                  </FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="bg-[#f5f5f5] border-none rounded-sm text-sm text-gray-700 w-full">
+                        <SelectValue placeholder="Select a status" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {STATUS_OPTIONS.map((s) => (
+                        <SelectItem key={s} value={s}>
+                          {s}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Message Reply Field */}
             <FormField
               control={form.control}
               name="messageReply"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="!text-gray-700 !text-sm font-medium mt-5">
+                  <FormLabel className="!text-gray-700 !text-sm font-medium">
                     Message Reply
                   </FormLabel>
                   <FormControl>
@@ -138,18 +189,17 @@ const SupportReplyModal = ({
               )}
             />
 
+            {/* Action Buttons */}
             <div className="flex justify-between items-center gap-2">
-              {/* Submit Button */}
               <AppButton
                 className="w-1/2 mt-2 text-gray-50 text-base p-5 border-gray-800 bg-gradient-to-t to-green-800 from-green-500/70 hover:bg-green-500/80"
                 content={
                   <div className="flex justify-center items-center space-x-2 uppercase">
-                    <p>{isSubmitting ? 'Submting...' : 'Submit'}</p>
+                    <p>{isSubmitting ? 'Submitting...' : 'Submit'}</p>
                     <ArrowRight />
                   </div>
                 }
               />
-              {/* Cancel Button */}
               <button
                 type="button"
                 onClick={() => {
