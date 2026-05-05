@@ -219,9 +219,7 @@ const PayoutManage = () => {
         />
       </div>
 
-      <div className="h-[700px]">
-        <ADTable columns={columns} data={commissionEarnings || []} />
-      </div>
+      <ADTable columns={columns} data={commissionEarnings || []} />
       <ADPagination totalPage={meta?.totalPage} />
     </div>
   );

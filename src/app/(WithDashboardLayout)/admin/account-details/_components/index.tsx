@@ -60,7 +60,8 @@ const AccountDetails = () => {
   });
 
   const users = data?.data || [];
-  const meta = data?.meta || { totalPage: 1 };
+  const meta = data?.meta;
+  const totalPage = meta?.totalPage || 1;
 
   // search & createdAt date filtering part
   const updateSearchParams = useCallback(
@@ -306,10 +307,8 @@ const AccountDetails = () => {
         />
       </div>
 
-      <div className="h-[700px]">
-        <ADTable columns={columns} data={users || []} />
-      </div>
-      <ADPagination totalPage={meta?.totalPage} />
+      <ADTable columns={columns} data={users || []} />
+      <ADPagination totalPage={totalPage} />
 
       {/* Single User Modal */}
       <UserViewModal

@@ -234,9 +234,7 @@ const CustomerSupport = () => {
         />
       </div>
 
-      <div className="h-[700px]">
-        <ADTable columns={columns} data={supportMessages || []} />
-      </div>
+      <ADTable columns={columns} data={supportMessages || []} />
 
       {supportMessages?.length > 0 && (
         <ADPagination totalPage={meta?.totalPage} />

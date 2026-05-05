@@ -235,9 +235,7 @@ const Services = ({ vendorId }: Props) => {
       </div>
 
       {/* Table & Pagination */}
-      <div className="h-[700px]">
-        <ADTable columns={columns} data={products || []} />
-      </div>
+      <ADTable columns={columns} data={products || []} />
       <ADPagination totalPage={meta?.totalPage} />
 
       {/* Single Service Modal */}

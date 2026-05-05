@@ -261,9 +261,7 @@ const RecommendedType = () => {
       </div>
 
       {/* 📊 Table & Pagination */}
-      <div className="h-[700px]">
-        <ADTable columns={columns} data={recommendedTypes || []} />
-      </div>
+      <ADTable columns={columns} data={recommendedTypes || []} />
 
       {recommendedTypes.length > 0 && (
         <ADPagination totalPage={meta?.totalPage} />

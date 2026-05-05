@@ -266,9 +266,7 @@ const ProductType = () => {
       </div>
 
       {/* 📊 Table & Pagination */}
-      <div className="h-[700px]">
-        <ADTable columns={columns} data={productType || []} />
-      </div>
+      <ADTable columns={columns} data={productType || []} />
 
       {productType.length > 0 && <ADPagination totalPage={meta?.totalPage} />}
 

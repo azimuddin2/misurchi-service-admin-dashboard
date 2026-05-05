@@ -35,7 +35,7 @@ const serviceApi = baseApi.injectEndpoints({
         }
 
         return {
-          url: `/services?vendor=${vendorId}&page=${page}&limit=${limit}&${params.toString()}`,
+          url: `/services/vendor?vendorId=${vendorId}&page=${page}&limit=${limit}&${params.toString()}`,
           method: 'GET',
           credentials: 'include',
         };

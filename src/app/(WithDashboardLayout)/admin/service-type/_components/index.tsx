@@ -266,9 +266,7 @@ const ServiceType = () => {
       </div>
 
       {/* 📊 Table & Pagination */}
-      <div className="h-[700px]">
-        <ADTable columns={columns} data={serviceType || []} />
-      </div>
+      <ADTable columns={columns} data={serviceType || []} />
 
       {serviceType.length > 0 && <ADPagination totalPage={meta?.totalPage} />}
 

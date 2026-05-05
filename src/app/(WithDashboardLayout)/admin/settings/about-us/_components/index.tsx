@@ -72,7 +72,7 @@ export default function AboutUsForm() {
           <TextEditor
             name="content"
             control={control}
-            placeholder="Write About Us..."
+            placeholder="Write Cancelation Policy..."
             minHeight={600}
           />
 
