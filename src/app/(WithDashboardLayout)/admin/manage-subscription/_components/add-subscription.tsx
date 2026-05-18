@@ -30,7 +30,6 @@ const AddSubscription = () => {
   const userId = user?.userId as string;
   const router = useRouter();
 
-  // Infer the TypeScript type from Zod
   type CreatePlanFormValues = z.infer<typeof createPlanValidationSchema>;
 
   const form = useForm<CreatePlanFormValues>({
@@ -62,8 +61,6 @@ const AddSubscription = () => {
   const [addSubscriptionPlan] = useAddSubscriptionPlanMutation();
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    console.log('Plan Data:', data);
-
     const planData = {
       user: userId,
       ...data,
@@ -73,7 +70,6 @@ const AddSubscription = () => {
 
     try {
       const res = await addSubscriptionPlan(planData).unwrap();
-      console.log(res);
       toast.success(res.message || 'Subscription plan added successfully');
       router.push(`/${user?.role}/manage-subscription`);
     } catch (error: any) {
@@ -82,6 +78,12 @@ const AddSubscription = () => {
       toast.dismiss(toastId);
     }
   };
+
+  // Track unlimited toggles
+  const serviceMaxValue = form.watch('limits.serviceMax');
+  const productMaxValue = form.watch('limits.productMax');
+  const isServiceUnlimited = serviceMaxValue === 'unlimited';
+  const isProductUnlimited = productMaxValue === 'unlimited';
 
   return (
     <div className="max-w-5xl mx-auto p-5 lg:p-8 bg-white rounded-lg">
@@ -210,12 +212,110 @@ const AddSubscription = () => {
           <div>
             <h3 className="text-xl font-medium mb-4">Usage Limits</h3>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {[
-                'serviceMax',
-                'productMax',
-                'highlightOfferMax',
-                'transactionFee',
-              ].map((limit) => (
+              {/* SERVICE MAX - Unlimited toggle আছে */}
+              <FormField
+                control={form.control}
+                name="limits.serviceMax"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center justify-between">
+                      <FormLabel className="capitalize">Service Max</FormLabel>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-500">Unlimited</span>
+                        <Switch
+                          checked={isServiceUnlimited}
+                          onCheckedChange={(checked) => {
+                            field.onChange(checked ? 'unlimited' : undefined);
+                          }}
+                          className="
+                            data-[state=checked]:bg-gradient-to-t 
+                            data-[state=checked]:from-green-600/70 
+                            data-[state=checked]:to-green-800
+                            data-[state=unchecked]:bg-gray-300
+                          "
+                        />
+                      </div>
+                    </div>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        disabled={isServiceUnlimited}
+                        value={
+                          isServiceUnlimited
+                            ? ''
+                            : field.value === undefined
+                              ? ''
+                              : field.value
+                        }
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value === ''
+                              ? undefined
+                              : Number(e.target.value),
+                          )
+                        }
+                        placeholder={isServiceUnlimited ? 'Unlimited' : ''}
+                        className="bg-[#f5f5f5] py-6 border rounded-sm disabled:opacity-50"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* PRODUCT MAX - Unlimited toggle আছে */}
+              <FormField
+                control={form.control}
+                name="limits.productMax"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center justify-between">
+                      <FormLabel className="capitalize">Product Max</FormLabel>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-500">Unlimited</span>
+                        <Switch
+                          checked={isProductUnlimited}
+                          onCheckedChange={(checked) => {
+                            field.onChange(checked ? 'unlimited' : undefined);
+                          }}
+                          className="
+                            data-[state=checked]:bg-gradient-to-t 
+                            data-[state=checked]:from-green-600/70 
+                            data-[state=checked]:to-green-800
+                            data-[state=unchecked]:bg-gray-300
+                          "
+                        />
+                      </div>
+                    </div>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        disabled={isProductUnlimited}
+                        value={
+                          isProductUnlimited
+                            ? ''
+                            : field.value === undefined
+                              ? ''
+                              : field.value
+                        }
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value === ''
+                              ? undefined
+                              : Number(e.target.value),
+                          )
+                        }
+                        placeholder={isProductUnlimited ? 'Unlimited' : ''}
+                        className="bg-[#f5f5f5] py-6 border rounded-sm disabled:opacity-50"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* HIGHLIGHT OFFER MAX ও TRANSACTION FEE - আগের মতোই */}
+              {['highlightOfferMax', 'transactionFee'].map((limit) => (
                 <FormField
                   key={limit}
                   control={form.control}

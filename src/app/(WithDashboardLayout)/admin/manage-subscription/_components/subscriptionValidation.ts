@@ -1,6 +1,11 @@
 import z from 'zod';
 
-// ✅ Validation Schema
+// ✅ unlimited support
+const serviceProductMaxSchema = z.union([
+  z.number().min(0),
+  z.literal('unlimited'),
+]);
+
 export const createPlanValidationSchema = z.object({
   name: z
     .string({ required_error: 'Plan name is required' })
@@ -16,12 +21,10 @@ export const createPlanValidationSchema = z.object({
     grantPermissionAccess: z.boolean(),
   }),
   limits: z.object({
-    serviceMax: z.number(),
-    productMax: z.number(),
+    serviceMax: serviceProductMaxSchema,
+    productMax: serviceProductMaxSchema,
     highlightOfferMax: z.number(),
     transactionFee: z.number(),
   }),
-
-  // ✅ validity as enum (not object)
   validity: z.enum(['free', '1month', '1year']),
 });

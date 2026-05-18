@@ -77,7 +77,18 @@ const EditSubscription = ({ id }: Props) => {
         cost: plan.cost,
         description: plan.description,
         features: plan.features,
-        limits: plan.limits,
+        limits: {
+          serviceMax:
+            plan.limits.serviceMax === 'unlimited'
+              ? 'unlimited'
+              : Number(plan.limits.serviceMax),
+          productMax:
+            plan.limits.productMax === 'unlimited'
+              ? 'unlimited'
+              : Number(plan.limits.productMax),
+          highlightOfferMax: Number(plan.limits.highlightOfferMax),
+          transactionFee: Number(plan.limits.transactionFee),
+        },
         validity: plan.validity,
       });
     }
@@ -102,6 +113,11 @@ const EditSubscription = ({ id }: Props) => {
       toast.dismiss(toastId);
     }
   };
+
+  const serviceMaxValue = form.watch('limits.serviceMax');
+  const productMaxValue = form.watch('limits.productMax');
+  const isServiceUnlimited = serviceMaxValue === 'unlimited';
+  const isProductUnlimited = productMaxValue === 'unlimited';
 
   if (isLoading) {
     return <Spinner />;
@@ -222,12 +238,90 @@ const EditSubscription = ({ id }: Props) => {
           <div>
             <h3 className="text-xl font-medium mb-4">Usage Limits</h3>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {[
-                'serviceMax',
-                'productMax',
-                'highlightOfferMax',
-                'transactionFee',
-              ].map((limit) => (
+              {/* SERVICE MAX */}
+              <FormField
+                control={form.control}
+                name="limits.serviceMax"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center justify-between">
+                      <FormLabel className="capitalize">Service Max</FormLabel>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-500">Unlimited</span>
+                        <Switch
+                          checked={isServiceUnlimited}
+                          onCheckedChange={(checked) => {
+                            field.onChange(checked ? 'unlimited' : 0);
+                          }}
+                          className="
+                  data-[state=checked]:bg-gradient-to-t 
+                  data-[state=checked]:from-green-600/70 
+                  data-[state=checked]:to-green-800
+                  data-[state=unchecked]:bg-gray-300
+                "
+                        />
+                      </div>
+                    </div>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        disabled={isServiceUnlimited}
+                        value={
+                          isServiceUnlimited ? '' : Number(field.value) || 0
+                        }
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        placeholder={isServiceUnlimited ? 'Unlimited' : ''}
+                        className="bg-[#f5f5f5] py-6 border rounded-sm disabled:opacity-50"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* PRODUCT MAX */}
+              <FormField
+                control={form.control}
+                name="limits.productMax"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center justify-between">
+                      <FormLabel className="capitalize">Product Max</FormLabel>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-500">Unlimited</span>
+                        <Switch
+                          checked={isProductUnlimited}
+                          onCheckedChange={(checked) => {
+                            field.onChange(checked ? 'unlimited' : 0);
+                          }}
+                          className="
+                  data-[state=checked]:bg-gradient-to-t 
+                  data-[state=checked]:from-green-600/70 
+                  data-[state=checked]:to-green-800
+                  data-[state=unchecked]:bg-gray-300
+                "
+                        />
+                      </div>
+                    </div>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        disabled={isProductUnlimited}
+                        value={
+                          isProductUnlimited ? '' : Number(field.value) || 0
+                        }
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        placeholder={isProductUnlimited ? 'Unlimited' : ''}
+                        className="bg-[#f5f5f5] py-6 border rounded-sm disabled:opacity-50"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* HIGHLIGHT OFFER MAX & TRANSACTION FEE - same as before */}
+              {['highlightOfferMax', 'transactionFee'].map((limit) => (
                 <FormField
                   key={limit}
                   control={form.control}
