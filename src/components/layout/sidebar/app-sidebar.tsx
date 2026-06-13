@@ -9,7 +9,6 @@ import {
   Package,
   Wallet,
   Crown,
-  Banknote,
   Headphones,
   Settings,
   FileText,
@@ -17,6 +16,8 @@ import {
   Info,
   ShieldCheck,
   UserPen,
+  Gift,
+  BadgeDollarSign,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -60,12 +61,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         icon: Star,
       },
       {
-        title: 'Service Type',
+        title: 'Service Category',
         url: `/admin/service-type`,
         icon: Wrench,
       },
       {
-        title: 'Product Type',
+        title: 'Product Category',
         url: `/admin/product-type`,
         icon: Package,
       },
@@ -80,15 +81,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         icon: Crown,
       },
       {
-        title: 'Payout Manage',
-        url: `/admin/payout-manage`,
-        icon: Banknote,
+        title: 'Refer & Earn',
+        url: `/admin/refer-earn`,
+        icon: Gift,
       },
-      // {
-      //   title: 'Refer and Earn',
-      //   url: `/admin/refer-earn`,
-      //   icon: Gift,
-      // },
+      {
+        title: 'Refer Payout Manage',
+        url: `/admin/payout-manage`,
+        icon: BadgeDollarSign,
+      },
       {
         title: 'Customer Support',
         url: `/admin/customer-support`,

@@ -3,7 +3,6 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye, Search } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
-import { format, parseISO } from 'date-fns';
 import { ADTable } from '@/components/modules/ADTable';
 import { useCallback, useEffect, useState } from 'react';
 import ADPagination from '@/components/modules/ADPagination';
@@ -15,122 +14,48 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useGetAllVendorReferralStatsQuery } from '@/redux/features/referral/referralApi';
+import Spinner from '@/components/shared/Spinner';
 
 type TRefer = {
-  _id: string;
+  vendorId: string;
   name: string;
   referralCode: string;
-  totalReferred: number;
-  points: number;
+  totalReferred: string;
+  totalPoints: number;
+  serial: number;
 };
 
 const ReferEarn = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const [search, setSearch] = useState<string>(
     searchParams.get('searchTerm') || '',
   );
-  const initialDateParam = searchParams.get('createdAt');
-  const initialDate = initialDateParam ? parseISO(initialDateParam) : undefined;
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    initialDate,
+
+  const initialDateParam = searchParams.get('month');
+  const [selectedMonth, setSelectedMonth] = useState<string>(
+    initialDateParam || '',
   );
 
-  // const page = searchParams.get('page') || 1;
-  // const limit = searchParams.get('limit') || 10;
-  // const searchTerm = searchParams.get('searchTerm') || '';
-  // const createdAt = searchParams.get('createdAt') || '';
+  const page = searchParams.get('page') || 1;
+  const limit = searchParams.get('limit') || 10;
+  const searchTerm = searchParams.get('searchTerm') || '';
+  const month = searchParams.get('month') || '';
 
-  // const { data, isLoading, refetch } = useGetAllUsersQuery({
-  //     page,
-  //     limit,
-  //     query: {
-  //         searchTerm,
-  //         createdAt,
-  //     },
-  // });
+  // ✅ Real API
+  const { data, isLoading } = useGetAllVendorReferralStatsQuery({
+    page,
+    limit,
+    searchTerm,
+    month,
+  });
 
-  // const users = data?.data || [];
-  // const meta = data?.meta || { totalPage: 1 };
+  const vendors = data?.data || [];
+  const meta = data?.meta || { totalPage: 1 };
 
-  const payouts = [
-    {
-      _id: 'r1',
-      name: 'Azim Uddin',
-      referralCode: 'REF-AZIM01',
-      totalReferred: 5,
-      points: 150,
-    },
-    {
-      _id: 'r2',
-      name: 'John Doe',
-      referralCode: 'REF-JOHN02',
-      totalReferred: 3,
-      points: 90,
-    },
-    {
-      _id: 'r3',
-      name: 'Emily Smith',
-      referralCode: 'REF-EMI03',
-      totalReferred: 8,
-      points: 240,
-    },
-    {
-      _id: 'r4',
-      name: 'Michael Brown',
-      referralCode: 'REF-MIKE04',
-      totalReferred: 2,
-      points: 60,
-    },
-    {
-      _id: 'r5',
-      name: 'Sophia Johnson',
-      referralCode: 'REF-SOPH05',
-      totalReferred: 6,
-      points: 180,
-    },
-    {
-      _id: 'r6',
-      name: 'David Wilson',
-      referralCode: 'REF-DAVE06',
-      totalReferred: 1,
-      points: 30,
-    },
-    {
-      _id: 'r7',
-      name: 'Olivia Martinez',
-      referralCode: 'REF-OLIV07',
-      totalReferred: 4,
-      points: 120,
-    },
-    {
-      _id: 'r8',
-      name: 'Liam Anderson',
-      referralCode: 'REF-LIAM08',
-      totalReferred: 7,
-      points: 210,
-    },
-    {
-      _id: 'r9',
-      name: 'Emma Davis',
-      referralCode: 'REF-EMMA09',
-      totalReferred: 3,
-      points: 90,
-    },
-    {
-      _id: 'r10',
-      name: 'Daniel Thomas',
-      referralCode: 'REF-DANI10',
-      totalReferred: 5,
-      points: 150,
-    },
-  ];
-  const meta = { totalPage: 1 };
-
-  // search & createdAt date filtering part
   const updateSearchParams = useCallback(
     (newParams: Record<string, string | null | undefined>) => {
       const currentParams = new URLSearchParams(searchParams.toString());
@@ -150,26 +75,21 @@ const ReferEarn = () => {
     updateSearchParams({ searchTerm: search, page: '1' });
   };
 
-  const handleDateSelect = (date: Date | undefined) => {
-    setSelectedDate(date);
-    updateSearchParams({
-      createdAt: date ? format(date, 'yyyy-MM-dd') : null, // Only send 'YYYY-MM-DD'
-      page: '1',
-    });
+  const handleMonthSelect = (month: string) => {
+    setSelectedMonth(month);
+    updateSearchParams({ month: month || null, page: '1' });
   };
 
   useEffect(() => {
     setSearch(searchParams.get('searchTerm') || '');
-
-    const dateParam = searchParams.get('createdAt');
-    if (dateParam) {
-      setSelectedDate(parseISO(dateParam));
-    } else {
-      setSelectedDate(undefined);
-    }
+    setSelectedMonth(searchParams.get('month') || '');
   }, [searchParams]);
 
-  // Table columns
+  // ✅ View button click
+  const handleView = (vendorId: string) => {
+    router.push(`/admin/refer-earn/${vendorId}`);
+  };
+
   const columns: ColumnDef<TRefer>[] = [
     {
       id: 'select',
@@ -189,8 +109,8 @@ const ReferEarn = () => {
           onCheckedChange={(value) => {
             setSelectedIds((prev) =>
               value
-                ? [...prev, row.original._id]
-                : prev.filter((id) => id !== row.original._id),
+                ? [...prev, row.original.vendorId]
+                : prev.filter((id) => id !== row.original.vendorId),
             );
             row.toggleSelected(!!value);
           }}
@@ -201,7 +121,7 @@ const ReferEarn = () => {
     {
       id: 'serial',
       header: 'Serial',
-      cell: ({ row }) => String(row.index + 1).padStart(2, '0'),
+      cell: ({ row }) => String(row.original.serial).padStart(2, '0'),
     },
     {
       accessorKey: 'name',
@@ -216,12 +136,12 @@ const ReferEarn = () => {
     {
       accessorKey: 'totalReferred',
       header: 'Total Referred',
-      cell: ({ row }) => <span>{row.original.totalReferred} Users</span>,
+      cell: ({ row }) => <span>{row.original.totalReferred}</span>,
     },
     {
-      accessorKey: 'points',
-      header: 'Total points',
-      cell: ({ row }) => <span>{row.original.points}</span>,
+      accessorKey: 'totalPoints',
+      header: 'Total Points',
+      cell: ({ row }) => <span>{row.original.totalPoints}</span>,
     },
     {
       accessorKey: 'action',
@@ -233,6 +153,7 @@ const ReferEarn = () => {
               <TooltipTrigger>
                 <Eye
                   size={22}
+                  onClick={() => handleView(row.original.vendorId)}
                   className="text-[#78C0A8] cursor-pointer hover:text-[#165940]"
                 />
               </TooltipTrigger>
@@ -244,9 +165,13 @@ const ReferEarn = () => {
     },
   ];
 
+  if (isLoading) {
+    return <Spinner />;
+  }
+
   return (
     <div>
-      {/* Search + Date Filter Section */}
+      {/* Search + Month Filter */}
       <div className="flex flex-col lg:justify-between lg:flex-row gap-4 mt-5 mb-5">
         <div className="relative w-full lg:w-3/5">
           <Input
@@ -264,21 +189,17 @@ const ReferEarn = () => {
           </button>
         </div>
 
-        {/* Date Picker */}
+        {/* Month Picker */}
         <input
-          type="date"
-          value={selectedDate ? format(selectedDate, 'yyyy-MM-dd') : ''}
-          onChange={(e) =>
-            handleDateSelect(
-              e.target.value ? new Date(e.target.value) : undefined,
-            )
-          }
+          type="month"
+          value={selectedMonth}
+          onChange={(e) => handleMonthSelect(e.target.value)}
           className="px-4 py-2 border rounded lg:w-2/5"
         />
       </div>
 
-      <ADTable columns={columns} data={payouts || []} />
-      <ADPagination totalPage={meta?.totalPage} />
+      <ADTable columns={columns} data={vendors} />
+      {vendors?.length > 1 && <ADPagination totalPage={meta?.totalPage} />}
     </div>
   );
 };
