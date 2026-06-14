@@ -149,28 +149,7 @@ const CustomerSupport = () => {
     {
       accessorKey: 'createdAt',
       header: 'Date',
-      cell: ({ row }) =>
-        format(new Date(row.original.createdAt), 'dd MMM, yyyy'),
-    },
-    {
-      accessorKey: 'status',
-      header: 'Status',
-      cell: ({ row }) => {
-        const statusColor: Record<string, string> = {
-          Pending: 'text-yellow-500',
-          Reviewed: 'text-blue-500',
-          'In Progress': 'text-orange-500',
-          Resolved: 'text-green-600',
-        };
-        const status = row.original.status;
-        return (
-          <span
-            className={`text-sm font-semibold ${statusColor[status] ?? 'text-gray-500'}`}
-          >
-            {status}
-          </span>
-        );
-      },
+      cell: ({ row }) => format(new Date(row.original.date), 'dd MMM, yyyy'),
     },
     {
       accessorKey: 'action',
@@ -180,11 +159,7 @@ const CustomerSupport = () => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <MessageCircleReply
-                  onClick={() => {
-                    setUpdateData(row.original); // save selected row data
-                    setUpdateModalOpen(true); // open update modal
-                  }}
+                <Eye
                   size={22}
                   className="text-[#78C0A8] cursor-pointer hover:text-[#165940]"
                 />
@@ -234,19 +209,10 @@ const CustomerSupport = () => {
         />
       </div>
 
-      <ADTable columns={columns} data={supportMessages || []} />
-
-      {supportMessages?.length > 0 && (
-        <ADPagination totalPage={meta?.totalPage} />
-      )}
-
-      {/* Support Message Reply Type Modal  */}
-      <SupportReplyModal
-        isOpen={isUpdateModalOpen}
-        onOpenChange={setUpdateModalOpen}
-        refetch={refetch}
-        supportData={updateData}
-      />
+      <div>
+        <ADTable columns={columns} data={payouts || []} />
+      </div>
+      <ADPagination totalPage={meta?.totalPage} />
     </div>
   );
 };
