@@ -7,7 +7,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { Eye, Search, ShieldBan, ShieldCheck } from 'lucide-react';
+import {
+  Eye,
+  Search,
+  ShieldBan,
+  ShieldCheck,
+  UserRoundCheck,
+} from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { format, parseISO } from 'date-fns';
 import { IUser } from '@/types';
@@ -19,11 +25,13 @@ import { Input } from '@/components/ui/input';
 import {
   useChangeUserStatusMutation,
   useGetAllUsersQuery,
+  useReactivateUserAccountMutation,
 } from '@/redux/features/user/userApi';
 import Spinner from '@/components/shared/Spinner';
 import UserViewModal from './user-view-modal';
 import BlockUserModal from './block-user-modal';
 import { toast } from 'sonner';
+import ReactivateUserModal from './reactivate-user-modal';
 
 const AccountDetails = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -32,6 +40,9 @@ const AccountDetails = () => {
 
   const [blockModalUser, setBlockModalUser] = useState<IUser | null>(null);
   const [isBlockModalOpen, setIsBlockModalOpen] = useState(false);
+
+  const [reactivateUser, setReactivateUser] = useState<IUser | null>(null);
+  const [isReactivateModalOpen, setIsReactivateModalOpen] = useState(false);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -127,6 +138,22 @@ const AccountDetails = () => {
       }
     } catch (error) {
       toast.error('Failed to update user status');
+    }
+  };
+
+  const [reactivateUserAccount, { isLoading: isReactivating }] =
+    useReactivateUserAccountMutation();
+
+  const handleReactivateConfirm = async () => {
+    if (!reactivateUser) return;
+    try {
+      await reactivateUserAccount(reactivateUser._id).unwrap();
+      toast.success('Account has been reactivated. The user can now log in.');
+      setIsReactivateModalOpen(false);
+      setReactivateUser(null);
+      refetch();
+    } catch {
+      toast.error('Failed to reactivate account. Please try again.');
     }
   };
 
@@ -265,6 +292,24 @@ const AccountDetails = () => {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
+          {/* 👇 Reactivate — only if account is deleted */}
+          {row.original.isDeleted === true && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <UserRoundCheck
+                    size={22}
+                    onClick={() => {
+                      setReactivateUser(row.original);
+                      setIsReactivateModalOpen(true);
+                    }}
+                    className="text-blue-500 cursor-pointer hover:text-blue-700"
+                  />
+                </TooltipTrigger>
+                <TooltipContent>Reactivate Account</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
         </div>
       ),
     },
@@ -308,7 +353,8 @@ const AccountDetails = () => {
       </div>
 
       <ADTable columns={columns} data={users || []} />
-      <ADPagination totalPage={totalPage} />
+
+      {users?.length > 1 && <ADPagination totalPage={totalPage} />}
 
       {/* Single User Modal */}
       <UserViewModal
@@ -322,6 +368,17 @@ const AccountDetails = () => {
         isOpen={isBlockModalOpen}
         onOpenChange={setIsBlockModalOpen}
         onConfirm={handleBlockConfirm}
+      />
+
+      <ReactivateUserModal
+        user={reactivateUser}
+        isOpen={isReactivateModalOpen}
+        isLoading={isReactivating}
+        onOpenChange={(open) => {
+          setIsReactivateModalOpen(open);
+          if (!open) setReactivateUser(null);
+        }}
+        onConfirm={handleReactivateConfirm}
       />
     </div>
   );

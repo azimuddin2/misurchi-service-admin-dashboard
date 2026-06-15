@@ -84,9 +84,11 @@ export function ADTable<TData, TValue>({
                   alt="No results"
                   width={100}
                   height={100}
-                  className="mx-auto w-40 mt-20"
+                  className="mx-auto w-32 mt-20"
                 />
-                <span className="text-sm font-medium">No Results.</span>
+                <span className="text-base text-gray-500 font-medium">
+                  No Results Found
+                </span>
               </TableCell>
             </TableRow>
           )}

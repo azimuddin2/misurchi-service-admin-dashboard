@@ -175,7 +175,7 @@ const LoginForm = () => {
             />
 
             {/* Forgot Password */}
-            <div className="flex justify-between items-center mt-5 mb-2">
+            <div className="flex justify-between items-center mb-2 mx-4 mt-8">
               <div className="flex items-center space-x-2">
                 <Checkbox
                   onClick={() => setAccept((prev) => !prev)}

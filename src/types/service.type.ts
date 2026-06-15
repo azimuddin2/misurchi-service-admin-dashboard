@@ -44,12 +44,14 @@ export type TService = {
   savedServices: TServicePricing[];
   description: string; // optional
   images: TImage[];
-  status: string;
+  status: TStatus;
   highlightStatus: string;
 
   availability: {
     weeklySchedule: Partial<Record<TWeekDay, TDaySchedule>>; // not all days required
   };
+
+  recommendedType: string[];
 
   reviews?: TReview[]; // can store populated reviews
   avgRating?: number;

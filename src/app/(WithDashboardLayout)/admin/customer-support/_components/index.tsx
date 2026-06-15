@@ -1,7 +1,7 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { Eye, MessageCircleReply, Search } from 'lucide-react';
+import { MessageCircleReply, Search } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { format, parseISO } from 'date-fns';
 import { ADTable } from '@/components/modules/ADTable';
@@ -149,7 +149,28 @@ const CustomerSupport = () => {
     {
       accessorKey: 'createdAt',
       header: 'Date',
-      cell: ({ row }) => format(new Date(row.original.date), 'dd MMM, yyyy'),
+      cell: ({ row }) =>
+        format(new Date(row.original.createdAt), 'dd MMM, yyyy'),
+    },
+    {
+      accessorKey: 'status',
+      header: 'Status',
+      cell: ({ row }) => {
+        const statusColor: Record<string, string> = {
+          Pending: 'text-yellow-500',
+          Reviewed: 'text-blue-500',
+          'In Progress': 'text-orange-500',
+          Resolved: 'text-green-600',
+        };
+        const status = row.original.status;
+        return (
+          <span
+            className={`text-sm font-semibold ${statusColor[status] ?? 'text-gray-500'}`}
+          >
+            {status}
+          </span>
+        );
+      },
     },
     {
       accessorKey: 'action',
@@ -159,9 +180,13 @@ const CustomerSupport = () => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <Eye
+                <MessageCircleReply
                   size={22}
-                  className="text-[#78C0A8] cursor-pointer hover:text-[#165940]"
+                  className="text-[#3a7c65] cursor-pointer hover:text-[#165940]"
+                  onClick={() => {
+                    setUpdateData(row.original);
+                    setUpdateModalOpen(true);
+                  }}
                 />
               </TooltipTrigger>
               <TooltipContent>Reply</TooltipContent>
@@ -209,10 +234,19 @@ const CustomerSupport = () => {
         />
       </div>
 
-      <div>
-        <ADTable columns={columns} data={payouts || []} />
-      </div>
-      <ADPagination totalPage={meta?.totalPage} />
+      <ADTable columns={columns} data={supportMessages || []} />
+
+      {supportMessages?.length > 1 && (
+        <ADPagination totalPage={meta?.totalPage} />
+      )}
+
+      {/* Support Message Reply Type Modal  */}
+      <SupportReplyModal
+        isOpen={isUpdateModalOpen}
+        onOpenChange={setUpdateModalOpen}
+        refetch={refetch}
+        supportData={updateData}
+      />
     </div>
   );
 };

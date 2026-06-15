@@ -1,7 +1,7 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { Eye, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { format, parseISO } from 'date-fns';
 import { ADTable } from '@/components/modules/ADTable';

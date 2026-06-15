@@ -176,7 +176,7 @@ const CommissionEarnings = () => {
   ];
 
   if (isLoading) {
-    <Spinner />;
+    return <Spinner />;
   }
 
   return (
@@ -213,8 +213,9 @@ const CommissionEarnings = () => {
       </div>
 
       <ADTable columns={columns} data={commissionEarnings || []} />
-
-      <ADPagination totalPage={meta?.totalPage} />
+      {commissionEarnings?.length > 1 && (
+        <ADPagination totalPage={meta?.totalPage} />
+      )}
     </div>
   );
 };

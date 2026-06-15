@@ -1,5 +1,5 @@
 import { TReview } from './review.type';
-import { TVendorUser } from './user.type';
+import { IUser, TVendorUser } from './user.type';
 
 export type TProductType = {
   _id: string;
@@ -13,6 +13,7 @@ export type TProductType = {
 export type TProduct = {
   _id: string;
   vendor: TVendorUser;
+  user: IUser;
   name: string;
   productCode: string;
   images: TImage[];
@@ -21,7 +22,8 @@ export type TProduct = {
   price: number;
   discountPrice: string;
   colors: string[];
-  size: string;
+  recommendedType: string[];
+  size: string[];
   status: 'Available' | 'Out of Stock' | 'TBC' | 'Discontinued';
   highlightStatus: string;
   description: string;

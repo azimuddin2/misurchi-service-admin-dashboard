@@ -66,6 +66,15 @@ const userApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['User'],
     }),
+
+    reactivateUserAccount: builder.mutation<TResponse<IUser>, string>({
+      query: (id) => ({
+        url: `/users/reactivate/${id}`,
+        method: 'PATCH',
+        credentials: 'include',
+      }),
+      invalidatesTags: ['User'],
+    }),
   }),
 });
 
@@ -74,4 +83,5 @@ export const {
   useGetUserProfileQuery,
   useChangeUserStatusMutation,
   useUpdateUserProfileMutation,
+  useReactivateUserAccountMutation,
 } = userApi;

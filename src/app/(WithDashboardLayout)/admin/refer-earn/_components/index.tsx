@@ -20,8 +20,8 @@ import Spinner from '@/components/shared/Spinner';
 type TRefer = {
   vendorId: string;
   name: string;
-  referralCode: string;
-  totalReferred: string;
+  referralCode: number;
+  totalReferredUsers: number;
   totalPoints: number;
   serial: number;
 };
@@ -45,7 +45,6 @@ const ReferEarn = () => {
   const searchTerm = searchParams.get('searchTerm') || '';
   const month = searchParams.get('month') || '';
 
-  // ✅ Real API
   const { data, isLoading } = useGetAllVendorReferralStatsQuery({
     page,
     limit,
@@ -85,7 +84,6 @@ const ReferEarn = () => {
     setSelectedMonth(searchParams.get('month') || '');
   }, [searchParams]);
 
-  // ✅ View button click
   const handleView = (vendorId: string) => {
     router.push(`/admin/refer-earn/${vendorId}`);
   };
@@ -134,9 +132,9 @@ const ReferEarn = () => {
       cell: ({ row }) => <span>{row.original.referralCode}</span>,
     },
     {
-      accessorKey: 'totalReferred',
+      accessorKey: 'totalReferredUsers',
       header: 'Total Referred',
-      cell: ({ row }) => <span>{row.original.totalReferred}</span>,
+      cell: ({ row }) => <span>{row.original.totalReferredUsers}</span>,
     },
     {
       accessorKey: 'totalPoints',

@@ -1,13 +1,10 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { Search } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ADTable } from '@/components/modules/ADTable';
-import { useCallback, useEffect, useState } from 'react';
 import ADPagination from '@/components/modules/ADPagination';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Input } from '@/components/ui/input';
+import { useSearchParams } from 'next/navigation';
 import { useGetVendorReferralDetailQuery } from '@/redux/features/referral/referralApi';
 import Spinner from '@/components/shared/Spinner';
 
@@ -20,18 +17,11 @@ type TReferDetail = {
 };
 
 const VendorReferralDetail = ({ vendorId }: { vendorId: string }) => {
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const searchParams = useSearchParams();
-  const router = useRouter();
-
-  const [search, setSearch] = useState<string>(
-    searchParams.get('searchTerm') || '',
-  );
 
   const page = searchParams.get('page') || 1;
   const limit = searchParams.get('limit') || 10;
 
-  // ✅ Real API
   const { data, isLoading } = useGetVendorReferralDetailQuery({
     vendorId,
     page,
@@ -40,29 +30,6 @@ const VendorReferralDetail = ({ vendorId }: { vendorId: string }) => {
 
   const referrals = data?.data || [];
   const meta = data?.meta || { totalPage: 1 };
-
-  const updateSearchParams = useCallback(
-    (newParams: Record<string, string | null | undefined>) => {
-      const currentParams = new URLSearchParams(searchParams.toString());
-      Object.entries(newParams).forEach(([key, value]) => {
-        if (!value) {
-          currentParams.delete(key);
-        } else {
-          currentParams.set(key, value);
-        }
-      });
-      router.push(`?${currentParams.toString()}`);
-    },
-    [router, searchParams],
-  );
-
-  const handleSearch = () => {
-    updateSearchParams({ searchTerm: search, page: '1' });
-  };
-
-  useEffect(() => {
-    setSearch(searchParams.get('searchTerm') || '');
-  }, [searchParams]);
 
   const columns: ColumnDef<TReferDetail>[] = [
     {
@@ -138,25 +105,6 @@ const VendorReferralDetail = ({ vendorId }: { vendorId: string }) => {
 
   return (
     <div>
-      {/* Search
-            <div className="flex flex-col lg:justify-between lg:flex-row gap-4 mt-5 mb-5">
-                <div className="relative w-full lg:w-3/5">
-                    <Input
-                        type="text"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Search..."
-                        className="border px-4 py-6 pr-12 rounded w-full"
-                    />
-                    <button
-                        onClick={handleSearch}
-                        className="absolute top-1/2 right-0 -translate-y-1/2 px-3 py-3 bg-[#165940] text-white rounded cursor-pointer"
-                    >
-                        <Search />
-                    </button>
-                </div>
-            </div> */}
-
       <ADTable columns={columns} data={referrals} />
       {referrals?.length > 1 && <ADPagination totalPage={meta?.totalPage} />}
     </div>

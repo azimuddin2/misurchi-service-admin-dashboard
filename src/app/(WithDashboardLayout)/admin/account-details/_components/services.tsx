@@ -10,8 +10,6 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Eye, Search } from 'lucide-react';
-import { useAppSelector } from '@/redux/hooks';
-import { selectCurrentUser } from '@/redux/features/auth/authSlice';
 import Image from 'next/image';
 import { format, parseISO } from 'date-fns';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -60,7 +58,7 @@ const Services = ({ vendorId }: Props) => {
     },
   });
 
-  const products = data?.data || [];
+  const services = data?.data || [];
   const meta = data?.meta || { totalPage: 1 };
 
   // search & createdAt date filtering part
@@ -235,8 +233,9 @@ const Services = ({ vendorId }: Props) => {
       </div>
 
       {/* Table & Pagination */}
-      <ADTable columns={columns} data={products || []} />
-      <ADPagination totalPage={meta?.totalPage} />
+      <ADTable columns={columns} data={services || []} />
+
+      {services?.length > 1 && <ADPagination totalPage={meta?.totalPage} />}
 
       {/* Single Service Modal */}
       <ServiceViewModal

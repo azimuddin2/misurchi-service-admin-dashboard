@@ -54,8 +54,6 @@ const ProductViewModal = ({
     return { star, count, percentage };
   });
 
-  console.log(progress);
-
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="w-full max-w-full lg:max-w-[90rem] lg:h-[90vh] h-auto mx-auto rounded-lg p-6 overflow-auto">
@@ -94,8 +92,8 @@ const ProductViewModal = ({
                           <Image
                             src={image.url}
                             alt={`Thumbnail ${index + 1}`}
-                            width={100}
-                            height={100}
+                            width={80}
+                            height={80}
                             className="rounded-md cursor-pointer object-cover"
                           />
                         </button>
@@ -159,19 +157,36 @@ const ProductViewModal = ({
                           </p>
                         )}
                       </div>
+
+                      <div>
+                        {selectedProduct?.recommendedType?.length && (
+                          <div className="mt-3 right-2 z-10 items-end">
+                            {selectedProduct?.recommendedType.map(
+                              (type, index) => (
+                                <span
+                                  key={index}
+                                  className="bg-[#E9F4FFCC] text-[#0D3C6B] text-xs font-semibold px-2 py-1 rounded mr-2 uppercase ring-1 ring-[#d2dfeccc]"
+                                >
+                                  {type}
+                                </span>
+                              ),
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     {/* Product second part  */}
                     <div>
                       <div className="my-2 font-medium flex justify-between items-center p-5 border-t">
                         <span>Product Code</span>
-                        <span className="font-medium">
+                        <span className="font-mono text-sm bg-gray-50 border border-gray-200 px-2 py-0.5 rounded">
                           {selectedProduct?.productCode}
                         </span>
                       </div>
 
                       <div className="my-2 font-medium flex justify-between items-center bg-gradient-to-t to-[#cadfe7] from-[#d9ebe8] border-t border-b border-[#00325099] p-5">
-                        <span>Product Type</span>
+                        <span>Product Category</span>
                         <span className="font-medium">
                           {selectedProduct?.productType}
                         </span>
@@ -179,12 +194,25 @@ const ProductViewModal = ({
 
                       <div className="my-2 font-medium flex justify-between items-center p-5">
                         <span>Size</span>
-                        <span className="font-medium">
-                          {selectedProduct?.size}
-                        </span>
+                        <div className="flex flex-wrap gap-1.5 justify-end">
+                          {Array.isArray(selectedProduct?.size) ? (
+                            selectedProduct.size.map((s: string) => (
+                              <span
+                                key={s}
+                                className="px-2.5 py-0.5 rounded-sm bg-gray-100 border border-gray-200 text-sm font-medium text-gray-700"
+                              >
+                                {s}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="font-medium">
+                              {selectedProduct?.size}
+                            </span>
+                          )}
+                        </div>
                       </div>
 
-                      <div className="my-2 font-medium flex flex-col sm:flex-row justify-between items-start sm:items-center bg-gradient-to-t to-[#cadfe7] from-[#d9ebe8] border-t border-b border-[#00325099] p-4">
+                      <div className="my-2 font-medium flex flex-col sm:flex-row justify-between items-start sm:items-center bg-gradient-to-t to-[#cadfe7] from-[#d9ebe8] border-t border-b border-[#00325099] p-5 rounded-md">
                         <span className="mb-2 sm:mb-0">Product Colors:</span>
                         <div className="flex gap-2 flex-wrap">
                           {selectedProduct?.colors?.map(
@@ -226,9 +254,18 @@ const ProductViewModal = ({
                   <h5 className="text-lg font-medium uppercase border-b py-1">
                     Description
                   </h5>
-                  <p className="mt-2 text-base text-gray-500">
-                    {selectedProduct?.description}
-                  </p>
+                  <div
+                    className="mt-4 text-base text-gray-500 prose prose-sm max-w-none
+      [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-2
+      [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-2
+      [&_li]:my-0.5
+      [&_b]:font-semibold [&_strong]:font-semibold
+      [&_a]:text-blue-500 [&_a]:underline
+      [&_p]:my-1"
+                    dangerouslySetInnerHTML={{
+                      __html: selectedProduct?.description || '',
+                    }}
+                  />
                 </div>
 
                 {/* Review section */}
@@ -257,7 +294,7 @@ const ProductViewModal = ({
                     </div>
 
                     <div className="mt-5 space-y-2">
-                      {progress?.map(({ star, percentage }) => (
+                      {progress.map(({ star, percentage }) => (
                         <div key={star} className="flex items-center gap-3">
                           <span className="w-4 text-sm font-medium text-gray-700">
                             {star}
@@ -274,6 +311,8 @@ const ProductViewModal = ({
                     </div>
                   </div>
                 </div>
+
+                {/* <ViewReviews productId={productId} /> */}
               </div>
             </Card>
           </DialogDescription>

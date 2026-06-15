@@ -48,8 +48,8 @@ const BlockUserModal = ({
           <Button
             className={
               isBlocked
-                ? 'bg-green-600 hover:bg-green-700 text-white'
-                : 'bg-red-600 hover:bg-red-700 text-white'
+                ? 'bg-green-600 hover:bg-green-700 text-white cursor-pointer'
+                : 'bg-red-600 hover:bg-red-700 text-white cursor-pointer'
             }
             onClick={() => {
               onConfirm(user);

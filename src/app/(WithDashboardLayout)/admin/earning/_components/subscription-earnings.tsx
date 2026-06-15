@@ -163,7 +163,7 @@ const SubscriptionEarnings = () => {
   ];
 
   if (isLoading) {
-    <Spinner />;
+    return <Spinner />;
   }
 
   return (
@@ -200,7 +200,9 @@ const SubscriptionEarnings = () => {
       </div>
 
       <ADTable columns={columns} data={subscriptionEarnings || []} />
-      <ADPagination totalPage={meta?.totalPage} />
+      {subscriptionEarnings?.length > 1 && (
+        <ADPagination totalPage={meta?.totalPage} />
+      )}
     </div>
   );
 };

@@ -231,7 +231,8 @@ const Products = ({ vendorId }: Props) => {
 
       {/* Table & Pagination */}
       <ADTable columns={columns} data={products || []} />
-      <ADPagination totalPage={meta?.totalPage} />
+
+      {products?.length > 1 && <ADPagination totalPage={meta?.totalPage} />}
 
       {/* Single Product Modal */}
       <ProductViewModal
